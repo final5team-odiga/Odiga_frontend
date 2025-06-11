@@ -39,10 +39,12 @@ export default function CreateMagazine() {
   const [folderList, setFolderList] = useState([]);
   const [aiImages, setAiImages] = useState([]); // 이미지 URL 배열
   const [aiTexts, setAiTexts] = useState([]); // 텍스트 파일 배열
-  const [aiOutput, setAiOutput] = useState(null); // 결과물(예: PDF)
+  const [aiOutput, setAiOutput] = useState('/magazine_result_firstuser_magazine.pdf'); // PDF 경로 설정
   const [aiGenerating, setAIGenerating] = useState(false);
-  const [aiGenMessage, setAIGenMessage] = useState('');
-  const [showAIPopup, setShowAIPopup] = useState(false);
+  const [showAIPopup, setShowAIPopup] = useState(false); // 팝업이 기본적으로 보이지 않도록 수정
+
+  // output 파일 목록 상태 추가
+  const [outputFiles, setOutputFiles] = useState([]);
 
   // 템플릿 목록 정의
   const templates = [
@@ -118,6 +120,38 @@ export default function CreateMagazine() {
       else setAiTexts([]);
     } catch (e) {
       setAiTexts([]);
+    }
+  };
+
+  // output 파일 목록 불러오기 함수
+  const fetchOutputFiles = async (magazineId) => {
+    try {
+      const res = await axiosInstance.get(`/storage/outputs/list/?magazine_id=${magazineId}`);
+      if (res.data.success) setOutputFiles(res.data.files);
+      else setOutputFiles([]);
+    } catch (e) {
+      setOutputFiles([]);
+    }
+  };
+
+  // AI 생성 완료 팝업이 열릴 때 output 파일 목록 불러오기
+  useEffect(() => {
+    if (showAIPopup && selectedFolder) {
+      fetchOutputFiles(selectedFolder);
+    }
+  }, [showAIPopup, selectedFolder]);
+
+  // 다운로드 버튼 클릭 시 실제 다운로드 URL 받아서 이동
+  const handleDownloadOutput = async (filename) => {
+    try {
+      const res = await axiosInstance.get(`/storage/download-output/?filename=${encodeURIComponent(filename)}&magazine_id=${selectedFolder}`);
+      if (res.data.success && res.data.download_url) {
+        window.open(res.data.download_url, '_blank');
+      } else {
+        alert('다운로드 URL을 가져오지 못했습니다.');
+      }
+    } catch (e) {
+      alert('다운로드 중 오류가 발생했습니다.');
     }
   };
 
@@ -232,6 +266,8 @@ export default function CreateMagazine() {
   // 폴더 선택 핸들러 (더미)
   const handleFolderChange = (e) => {
     setSelectedFolder(e.target.value);
+    // 폴더 선택 시 output 파일 목록도 조회
+    fetchOutputFiles(e.target.value);
     // TODO: 폴더 선택 시 이미지/텍스트/아웃풋 조회 API 호출
   };
 
@@ -251,8 +287,6 @@ export default function CreateMagazine() {
       return;
     }
     setAIGenerating(true);
-    setAIGenMessage('AI가 매거진을 생성 중입니다...');
-    setAiOutput(null);
     setShowAIPopup(false);
     try {
       const formData = new FormData();
@@ -263,13 +297,11 @@ export default function CreateMagazine() {
       if (res.data.success) {
         const pdfUrl = res.data.pdf_generation?.output_path;
         setAiOutput(pdfUrl || null);
-        setAIGenMessage('AI 매거진 생성이 완료되었습니다!');
-        setShowAIPopup(true);
       } else {
-        setAIGenMessage('매거진 생성 실패: ' + (res.data.message || ''));
+        alert('매거진 생성 실패: ' + (res.data.message || ''));
       }
     } catch (e) {
-      setAIGenMessage('매거진 생성 중 오류가 발생했습니다.');
+      alert('매거진 생성 중 오류가 발생했습니다.');
     } finally {
       setAIGenerating(false);
     }
@@ -345,20 +377,58 @@ export default function CreateMagazine() {
             <button onClick={handleAIGenerate} disabled={!selectedFolder || aiGenerating}>
               {aiGenerating ? '생성 중...' : 'AI로 매거진 생성'}
             </button>
-            {aiGenMessage && <div className="ai-gen-message">{aiGenMessage}</div>}
+            {/* 임시 생성완료 팝업 확인 버튼 */}
+            <button
+              type="button"
+              style={{
+                marginLeft: '1em',
+                background: '#A294F9',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                padding: '12px 28px',
+                fontSize: '16px',
+                cursor: 'pointer',
+                display: (outputFiles.some(f => f.toLowerCase().endsWith('.pdf')) ? 'inline-block' : 'none')
+              }}
+              onClick={() => setShowAIPopup(true)}
+            >
+              생성된 매거진 확인
+            </button>
           </div>
-          {aiOutput && (
-            <div className="ai-output-area">
-              <label>생성된 PDF</label>
-              <div style={{marginBottom:'1em'}}>
-                <a href={aiOutput} target="_blank" rel="noopener noreferrer" download className="ai-pdf-download-btn">
-                  PDF 다운로드
-                </a>
-                <button onClick={handleRegisterCommunity} className="ai-community-btn" style={{marginLeft:'1em'}}>
-                  커뮤니티에 등록
-                </button>
+          {/* 팝업 오버레이 */}
+          {showAIPopup && (
+            <div className="ai-popup-overlay">
+              <div className="ai-popup-modal">
+                <button className="ai-popup-close" onClick={() => setShowAIPopup(false)}>×</button>
+                <h2>AI 매거진 생성 완료!</h2>
+                <div style={{marginBottom:'1em'}}>
+                  {/* output 파일 리스트 및 다운로드 버튼 */}
+                  {outputFiles.length > 0 ? (
+                    <ul style={{padding:0, listStyle:'none'}}>
+                      {outputFiles.map((file) => (
+                        <li key={file} style={{marginBottom:'0.5em'}}>
+                          <span 
+                            style={{marginRight:'1em', cursor:'pointer', textDecoration:'underline', color:'#4B3DF9'}}
+                            onClick={() => handleDownloadOutput(file)}
+                          >
+                            {file}
+                          </span>
+                          <button className="ai-pdf-download-btn" onClick={() => handleDownloadOutput(file)}>
+                            PDF 다운로드
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div>생성된 결과물이 없습니다.</div>
+                  )}
+                  <button onClick={handleRegisterCommunity} className="ai-community-btn">
+                    커뮤니티에 등록
+                  </button>
+                </div>
               </div>
-              <iframe src={aiOutput} width="100%" height="500px" title="매거진 미리보기" style={{marginTop: '1em', border:'1px solid #eee', borderRadius:'8px'}} />
             </div>
           )}
         </div>
@@ -541,25 +611,6 @@ export default function CreateMagazine() {
             </div>
           </div>
         </div>
-        {/* AI 매거진 생성 완료 오버레이 */}
-        {showAIPopup && aiOutput && (
-          <div className="ai-popup-overlay">
-            <div className="ai-popup-modal">
-              <button className="ai-popup-close" onClick={() => setShowAIPopup(false)} style={{position:'absolute',top:12,right:16,fontSize:'1.5em',background:'none',border:'none',cursor:'pointer'}}>×</button>
-              <h2 style={{marginBottom:'1em'}}>AI 매거진 생성 완료!</h2>
-              <div style={{marginBottom:'1em'}}>
-                <a href={aiOutput} target="_blank" rel="noopener noreferrer" download className="ai-pdf-download-btn">
-                  PDF 다운로드
-                </a>
-                <button onClick={handleRegisterCommunity} className="ai-community-btn" style={{marginLeft:'1em'}}>
-                  커뮤니티에 등록
-                </button>
-              </div>
-              <iframe src={aiOutput} width="100%" height="400px" title="매거진 미리보기" style={{marginTop: '1em', border:'1px solid #eee', borderRadius:'8px'}} />
-            </div>
-            <div className="ai-popup-backdrop" onClick={() => setShowAIPopup(false)} />
-          </div>
-        )}
         </>
       )}
     </div>

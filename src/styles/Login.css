@@ -480,3 +480,47 @@
     z-index: 10;
   }
 }
+
+body, #root {
+  height: 100vh;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #FDFBEE !important;
+  box-sizing: border-box;
+}
+
+.login-bg {
+  min-height: 100vh;
+  background: #FDFBEE !important;
+}
+
+.login-page-bg {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  background: #FDFBEE !important;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.login-container,
+.login-wrapper,
+.login-content {
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  background: none !important;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}

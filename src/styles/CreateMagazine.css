@@ -886,7 +886,7 @@
 }
 
 /* 템플릿 컴포넌트를 미리보기 영역에 맞게 스케일링 */
-.template-content > div {
+.magazine-preview .template-content > div {
   transform-origin: top left;
   transform: scale(0.7);
   width: 100%;
@@ -896,13 +896,13 @@
 
 /* 반응형 처리 개선 */
 @media (max-width: 1200px) {
-  .template-content > div {
+  .magazine-preview .template-content > div {
     transform: scale(0.65);
   }
 }
 
 @media (max-width: 992px) {
-  .template-content > div {
+  .magazine-preview .template-content > div {
     transform: scale(0.6);
   }
 }
@@ -1376,4 +1376,90 @@
 }
 .ai-output-area button:hover {
   background: #8a7be6;
+}
+
+/* AI 생성 완료 팝업 오버레이 */
+.ai-popup-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.45);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ai-popup-modal {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(162,148,249,0.18);
+  padding: 54px 64px 42px 64px;
+  min-width: 700px;
+  max-width: 1900px;
+  max-height: 135vh;
+  position: relative;
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: scaleIn 0.25s;
+}
+.ai-popup-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #aaa;
+  cursor: pointer;
+  z-index: 2200;
+  transition: color 0.2s;
+}
+.ai-popup-close:hover {
+  color: #A294F9;
+}
+.ai-popup-modal h2 {
+  margin-bottom: 1em;
+  color: #A294F9;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+.ai-popup-modal .ai-pdf-download-btn,
+.ai-popup-modal .ai-community-btn {
+  padding: 10px 20px;
+  background: #A294F9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+.ai-popup-modal .ai-pdf-download-btn:hover,
+.ai-popup-modal .ai-community-btn:hover {
+  background: #8a7be6;
+}
+.ai-popup-modal iframe {
+  margin-top: 1em;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  width: 100%;
+  min-width: 600px;
+  max-width: 1200px;
+  height: 600px;
+}
+@media (max-width: 1200px) {
+  .ai-popup-modal {
+    min-width: 0;
+    max-width: 98vw;
+    padding: 18px 6px 12px 6px;
+  }
+  .ai-popup-modal iframe {
+    min-width: 0;
+    max-width: 95vw;
+    height: 220px;
+  }
 } 
