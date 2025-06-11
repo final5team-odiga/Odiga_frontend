@@ -5,23 +5,23 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
-import HeaderNav from "./components/HeaderNav.jsx";
-import ScrollToTop from "./components/ScrollToTop.jsx";
-import Home from "./pages/Home.jsx";
-import SignUp from "./pages/SignUp.jsx";
-import Agreement from "./pages/Agreement.jsx";
-import Login from "./pages/Login.jsx";
-import CreateMagazine from "./pages/CreateMagazine.jsx";
-import TemplatePreview from "./pages/TemplatePreview.jsx";
-import TravelRecord from "./pages/TravelRecord.jsx";
-import Mypage from "./pages/Mypage.jsx";
-import CommunityList from "./pages/CommunityList.jsx";
-import CommunityDetail from "./pages/CommunityDetail.jsx";
-import CommunityWrite from "./pages/CommunityWrite.jsx";
-import OrderList from "./pages/OrderList.jsx";
-import Cart from "./pages/Cart.jsx";
-import Inquiry from "./pages/Inquiry.jsx";
-import SearchMapPage from "./pages/SearchMapPage.jsx";
+import HeaderNav from "./components/HeaderNav";
+import ScrollToTop from "./components/ScrollToTop";
+import Home from "./pages/Home";
+import SignUp from "./pages/SignUp";
+import Agreement from "./pages/Agreement";
+import Login from "./pages/Login";
+import CreateMagazine from "./pages/CreateMagazine";
+import TemplatePreview from "./pages/TemplatePreview";
+import TravelRecord from "./pages/TravelRecord";
+import Mypage from "./pages/Mypage";
+import CommunityList from "./pages/CommunityList";
+import CommunityDetail from "./pages/CommunityDetail";
+import CommunityWrite from "./pages/CommunityWrite";
+import OrderList from "./pages/OrderList";
+import Cart from "./pages/Cart";
+import Inquiry from "./pages/Inquiry";
+import SearchMapPage from "./pages/SearchMapPage";
 
 function AppContent() {
   const location = useLocation();
