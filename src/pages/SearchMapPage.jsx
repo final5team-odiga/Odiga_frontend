@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import WorldMapSVG from "../component/WorldMapSVG";
+import WorldMapSVG from "../components/WorldMapSVG.jsx";
 import "../styles/SearchMap.css";
-import { countryNames } from '../data/countryNames.jsx';
+import { countryNames } from "../data/countryNames.jsx";
 
 export default function SearchMapPage() {
   const [search, setSearch] = useState("");
@@ -25,4 +25,4 @@ export default function SearchMapPage() {
       </div>
     </div>
   );
-} 
+}
