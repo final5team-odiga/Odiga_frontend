@@ -1,0 +1,60 @@
+.SearchMap-container {
+  max-width: 900px;
+  margin: 48px auto 32px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px #a294f11a;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.SearchMap-searchbar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2.2rem;
+}
+.SearchMap-searchbar input {
+  width: 320px;
+  font-size: 1.13rem;
+  border: 1.5px solid #A294F9;
+  border-radius: 1.2rem;
+  padding: 0.7rem 1.1rem;
+  outline: none;
+  background: #fafaff;
+  transition: border 0.2s;
+}
+.SearchMap-searchbar input:focus {
+  border: 1.5px solid #6c63ff;
+  background: #f7f5ff;
+}
+.SearchMap-mapwrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f7f7fa;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 12px #a294f91a;
+  padding: 1.5rem 0.5rem;
+  min-height: 420px;
+  overflow: hidden;
+  position: relative;
+}
+/* react-simple-maps 마커/텍스트 커스텀 */
+.rsm-marker circle {
+  stroke: #fff;
+  stroke-width: 2px;
+}
+.rsm-marker text {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+}
+@media (max-width: 900px) {
+  .SearchMap-container {
+    max-width: 99vw;
+    padding: 1.2rem 0.3rem 1.2rem 0.3rem;
+  }
+  .SearchMap-mapwrap {
+    min-height: 220px;
+    padding: 0.5rem 0.1rem;
+  }
+} 

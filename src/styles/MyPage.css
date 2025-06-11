@@ -1,0 +1,309 @@
+body {
+  background: #f8f8f3;
+}
+
+.mypage-container {
+  max-width: 480px;
+  margin: 48px auto 32px auto;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 6px 32px #a294f91a;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  font-family: 'Noto Sans KR', sans-serif;
+  position: relative;
+}
+
+.mypage-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 2.2rem;
+  font-size: 0.98rem;
+  justify-content: flex-end;
+  color: #a294f9;
+}
+.mypage-nav a {
+  color: #a294f9;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+  padding: 0 2px;
+}
+.mypage-nav a:hover {
+  color: #6c63ff;
+  text-decoration: underline;
+}
+.nav-divider {
+  color: #e0e0e0;
+}
+
+/* 프로필 상단 헤더 */
+.mypage-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+.mypage-profile-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #222;
+  margin-left: 1.4rem;
+}
+.mypage-profile-edit-btn {
+  background: #a294f9;
+  color: #222;
+  border: none;
+  border-radius: 1.3rem;
+  padding: 0.4rem 1.4rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: none;
+  box-shadow: 0 2px 8px #a294f91a;
+  cursor: pointer;
+  margin-left: 0;
+}
+.mypage-profile-edit-btn:hover,
+.mypage-profile-edit-btn:active,
+.mypage-profile-edit-btn:focus {
+  background: #a294f9;
+  color: #222;
+}
+.mypage-profile-header .mypage-profile-edit-btn.save {
+  margin-right: 1px; /* 저장 버튼 오른쪽에만 여백 */
+  align-items: right;
+}
+.mypage-profile-edit-btn.cancel {
+  background: #eee;
+  color: #333;
+  border: 1px solid #ccc;
+  box-shadow: none;
+}
+
+.mypage-profile-edit-btn-group {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mypage-profile {
+  background: #f7f5ff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #a294f91a;
+  padding: 2rem 1.2rem 1.5rem 1.2rem;
+  margin-bottom: 2.2rem;
+  max-width: 85%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.mypage-profile-img, .mypage-noimg {
+  display: block;
+  margin: 0 auto 1.2rem auto;
+}
+.mypage-info {
+  text-align: left;
+  max-width: 220px;
+  margin: 40px 50px auto;
+  padding: 0;
+}
+.mypage-info li {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 0.6rem;
+  font-size: 1.05rem;
+  color: #222;
+}
+.mypage-info b {
+  min-width: 60px;
+  color: #222;
+}
+
+.mypage-articles {
+  margin-bottom: 2.2rem;
+  background: #f9f9fb;
+  border-radius: 14px;
+  padding: 1.2rem 1rem 1.2rem 1rem;
+  box-shadow: 0 1px 6px #a294f91a;
+  max-width: 85%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.mypage-articles h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+.mypage-articles ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.mypage-articles li {
+  margin-bottom: 0.7rem;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.mypage-articles a {
+  color: #6c63ff;
+  font-weight: 500;
+  text-decoration: underline;
+  margin-right: 0.5rem;
+  transition: color 0.2s;
+}
+.mypage-articles a:hover {
+  color: #a294f9;
+}
+.mypage-articles small {
+  color: #aaa;
+  font-size: 0.95em;
+}
+
+.mypage-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 1.5rem;
+  margin-right: 2.5rem;
+  text-align: right;
+  gap: 0.7rem;
+}
+
+.mypage-btn-group {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.mypage-btn {
+  min-width: 120px;
+  padding: 0.7rem 0;
+  border-radius: 2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.mypage-btn.danger {
+  background: #ff4444;
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  text-align: center;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+.mypage-btn.danger:hover {
+  background: #d32f2f;
+  color: #fff;
+}
+
+.mypage-actions h3 {
+  display: none; /* h3 숨김 */
+}
+
+.mypage-noimg {
+  width: 135px;
+  height: 135px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  margin: 0 auto 1.2rem auto;
+  font-size: 1.05rem;
+  border: 2.5px solid #e0e0f7;
+  box-shadow: 0 2px 8px #a294f933;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.mypage-inline-input {
+  font-size: 1.02rem;
+  padding: 0.4rem 0.6rem;
+  border: 1.2px solid #d1cfff;
+  border-radius: 0.7rem;
+  background: #fafaff;
+  color: #222;
+  margin-left: 0.3rem;
+  width: 60%;
+  min-width: 80px;
+  max-width: 140px;
+  outline: none;
+  transition: border 0.2s;
+}
+.mypage-inline-input:focus {
+  border: 1.5px solid #a294f9;
+  background: #f7f5ff;
+}
+
+.mypage-back-btn {
+  position: absolute;
+  top: 43px;
+  left: 0.5px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  padding: 0.3rem;
+  box-shadow: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  width: 40px;
+  height: 40px;
+}
+.mypage-back-btn:hover,
+.mypage-back-btn:focus {
+  background: #f7f5ff;
+}
+.mypage-back-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+  color: #a294f9;
+  transition: color 0.15s;
+}
+.mypage-back-btn:hover .mypage-back-icon {
+  color: #6c63ff;
+}
+
+@media (max-width: 600px) {
+  .mypage-container {
+    max-width: 98vw;
+    padding: 1.2rem 0.3rem 1.2rem 0.3rem;
+  }
+  .mypage-profile, .mypage-articles {
+    padding: 1.2rem 0.5rem 1rem 0.5rem;
+  }
+  .mypage-profile-img, .mypage-noimg {
+    width: 80px; height: 80px;
+  }
+  .mypage-actions {
+    flex-direction: column;
+    align-items: stretch;
+    margin-right: 0;
+    text-align: center;
+  }
+  .mypage-btn-group {
+    flex-direction: column;
+    gap: 0.7rem;
+    width: 100%;
+    justify-content: center;
+  }
+  .mypage-back-btn {
+    top: 8px;
+    left: 8px;
+    font-size: 0.98rem;
+    padding: 0.32rem 0.9rem 0.32rem 0.7rem;
+  }
+}

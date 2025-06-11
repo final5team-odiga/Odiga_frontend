@@ -21,3 +21,13 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+.env
+.venv/
+*.ipynb
+final_magazine_*.txt
+magazine_txts/
+requirements.txt
+travel_crew.py
+Orchestrator.py
+components/

@@ -1,0 +1,83 @@
+.Inquiry-container {
+  max-width: 540px;
+  margin: 48px auto 32px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px #a294f11a;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.Inquiry-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #A294F9;
+  margin-bottom: 2.2rem;
+  text-align: center;
+}
+.Inquiry-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+.Inquiry-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.Inquiry-row label {
+  font-size: 1.07rem;
+  color: #A294F9;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+.Inquiry-input, .Inquiry-textarea {
+  border: 1.2px solid #d1cfff;
+  border-radius: 1.2rem;
+  padding: 0.7rem 1.1rem;
+  font-size: 1.05rem;
+  background: #fafaff;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+}
+.Inquiry-input:focus, .Inquiry-textarea:focus {
+  border: 1.5px solid #A294F9;
+  background: #f7f5ff;
+}
+.Inquiry-textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+.Inquiry-btns {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.2rem;
+}
+.Inquiry-submit {
+  height: 40px;
+  min-width: 110px;
+  font-size: 1.07rem;
+  border-radius: 1.2rem;
+  padding: 0 1.5rem;
+  font-weight: 500;
+  background: #A294F9;
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px #a294f91a;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.Inquiry-submit:hover {
+  background: #6c63ff;
+  color: #fff;
+  box-shadow: 0 4px 18px #a294f930;
+}
+@media (max-width: 600px) {
+  .Inquiry-container {
+    max-width: 98vw;
+    padding: 1.2rem 0.3rem 1.2rem 0.3rem;
+  }
+} 

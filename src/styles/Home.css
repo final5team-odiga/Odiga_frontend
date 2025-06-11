@@ -1,0 +1,400 @@
+@font-face {
+  font-family: 'OngleafBakDahyun';
+  src: url('../../public/fonts/온글잎 박다현체.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+body, #root {
+  width: 100vw;
+  min-width: 0;
+  min-height: 0;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #FDFBEE;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
+  overflow-y: auto;   /* 세로 스크롤만 필요시 */
+}
+
+.home-bg {
+  width: 100vw;
+  min-width: 0;
+  min-height: 0;
+  height: 100vh;
+  background: #FDFBEE;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-container, .home-content {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.home-main {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  overflow: visible;
+  height: calc(100vh - 120px);
+}
+
+/* 왼쪽(매거진) */
+.home-left {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  padding: 60px 40px 0 80px;
+  box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 35px !important;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.magazine-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.magazine-animation {
+  width: 470px;
+  max-width: 70%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  margin-left: 15%;
+  margin-top: -10%;
+}
+.magazine-animation:hover {
+  transform: scale(1.02);
+}
+
+.click-indicator {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 38px;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+.click-indicator-inline {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-left: 20px;
+  display: inline-block;
+  opacity: 0.92;
+}
+
+/* 오른쪽(날씨/기온/기분/챗봇) */
+.home-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 60px 40px 20px 0;
+  height: 100%;
+  position: relative;
+}
+
+.note-center {
+  margin-bottom: 80px;
+  margin-right: 0;
+}
+
+.weather-area {
+  margin-bottom: 40px;
+  width: 100%;
+}
+.weather-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin: 0;
+  width: 100%;
+  min-height: 120px;
+  background: none;
+  margin-right: 160px;
+}
+.weather-row, .temperature-row, .emotion-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 22px;
+  min-height: 48px;
+}
+.weather-label, .temperature-label, .emotion-label {
+  font-size: 28px !important;
+  font-weight: bold !important;
+  margin-right: 18px;
+  color: #222;
+  min-width: 70px;
+}
+.weather-icon, .emotion-icon {
+  width: 38px;
+  height: 38px;
+  margin-right: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+.weather-row img:last-child,
+.emotion-row img:last-child {
+  margin-right: 0;
+}
+.temperature-value {
+  font-size: 28px;
+  margin-left: 2px;
+  color: #222;
+  letter-spacing: 0.5px;
+}
+.emotion-icons-container {
+  display: flex;
+  align-items: center;
+}
+
+/* 챗봇/오른쪽 하단 */
+.home-chatbot-center {
+  position: relative;
+  width: 600px;
+  height: 260px;
+  margin-right: 0;
+}
+.home-chatbot-area {
+  position: relative;
+  width: auto;
+  height: auto;
+}
+.home-chatbot-bubble {
+  position: absolute;
+  left: -25px;
+  bottom: -45px;
+  width: 330px;
+  height: 180px;
+  transform: none;
+  background: url('../../public/images/chat-bubble.svg') no-repeat center/contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 35px 45px 20px;
+  font-size: 18px;
+  line-height: 1.5;
+  text-align: center;
+  z-index: 3;
+  box-sizing: border-box;
+}
+.home-chatbot-action {
+  position: absolute;
+  right: 20px;
+  bottom: 40px;
+  z-index: 4;
+  text-align: right;
+}
+.home-chatbot-action-text {
+  font-size: 32px;
+  color: #A294F9;
+  font-weight: bold;
+  text-decoration: none;
+}
+.home-chatbot-shadow {
+  position: absolute;
+  left: 204px;
+  bottom: -205px;
+  width: 200px;
+  height: 30px;
+  opacity: 0.5;
+  z-index: 1;
+}
+.home-chatbot-character {
+  position: absolute;
+  left: 155px;
+  bottom: -230px;
+  width: 300px;
+  height: 300px;
+  z-index: 2;
+}
+
+/* 반응형 */
+@media (max-width: 900px) {
+  .home-main {
+    flex-direction: column;
+    height: auto;
+  }
+  .home-left, .home-right {
+    padding: 20px 10px;
+  }
+  .section-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .magazine-animation {
+    max-width: 100%;
+    margin-top: 10px;
+  }
+  .weather-label, .temperature-label, .emotion-label {
+    font-size: 18px;
+    min-width: 40px;
+  }
+  .weather-icon, .emotion-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 7px;
+  }
+  .temperature-value {
+    font-size: 20px;
+  }
+  .home-right {
+    padding: 40px 0 20px 0;
+  }
+  .note-center {
+    margin-bottom: 40px;
+    margin-right: 40px;
+  }
+  .home-chatbot-center {
+    width: 400px;
+    height: 200px;
+    margin-right: 20px;
+  }
+  .home-chatbot-character {
+    width: 150px;
+    height: 150px;
+    left: 160px;
+    bottom: -160px;
+  }
+  .home-chatbot-shadow {
+    width: 80px;
+    height: 15px;
+    left: 195px;
+    bottom: -145px;
+  }
+  .home-chatbot-bubble {
+    width: 220px;
+    height: 100px;
+    left: -20px;
+    bottom: -20px;
+    font-size: 14px;
+    padding: 10px 30px;
+  }
+  .home-chatbot-action-text {
+    font-size: 18px;
+  }
+  .home-chatbot-action {
+    right: 20px;
+    bottom: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-main {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    height: auto;
+    display: flex;
+  }
+  .section-title {
+    font-size: 1.1rem;
+    margin-top: 18px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .magazine-animation {
+    width: 90vw;
+    max-width: 220px;
+    margin: 0 auto 18px auto;
+  }
+  .note-center {
+    margin-bottom: 18px;
+    width: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+  .weather-section {
+    width: 100%;
+    align-items: center;
+    margin-right: 0 !important;
+  }
+  .home-right {
+    align-items: center;
+    padding: 0 4px 12px 4px;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .home-chatbot-center {
+    width: 100%;
+    min-height: 120px;
+    margin: 18px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto !important;
+  }
+  .home-chatbot-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: static !important;
+  }
+  .home-chatbot-bubble {
+    width: 150px;
+    height: 60px;
+    font-size: 12px;
+    margin-bottom: 8px !important;
+    padding: 6px 8px;
+    text-align: center;
+    position: static !important;
+  }
+  .home-chatbot-character {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 4px !important;
+    position: static !important;
+  }
+  .home-chatbot-shadow {
+    width: 24px;
+    height: 4px;
+    margin-bottom: 4px !important;
+    position: static !important;
+  }
+  .home-chatbot-action {
+    margin-top: 10px !important;
+    position: static !important;
+  }
+  .home-chatbot-action-text {
+    font-size: 1rem;
+  }
+}
+
+.header-links a {
+  text-decoration: none;
+  color: #3A3A3A;
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', Arial, sans-serif;
+  font-size: 14px;
+  margin: 0 2px;
+  transition: color 0.2s;
+}
+
+.header-links a:hover {
+  color: #A294F9;
+  text-decoration: underline;
+} 

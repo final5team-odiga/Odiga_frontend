@@ -1,0 +1,337 @@
+@font-face {
+  font-family: 'OngleafBakDahyun';
+  src: url('../../public/fonts/온글잎 박다현체.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 전체에 폰트 적용 */
+body, #root, .home-bg, .home-container, .home-content, .home-header, .header-content,
+.header-menu, .section-title, .weather-label-main, .weather-label, .temperature, .chat-text, .chat-link, .arrow-text {
+  font-family: 'OngleafBakDahyun', sans-serif;
+  font-size: 22px;
+  color: #222;
+  font-weight: normal;
+}
+
+.section-title, .weather-label-main {
+  font-weight: bold;
+}
+
+.home-header {
+  font-size: 22px;
+}
+
+/* 상단 링크만 기본 폰트로 */
+.header-links {
+  font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', Arial, sans-serif;
+  font-size: 14px;
+  color: #3A3A3A;
+  margin-bottom: 24px;
+  letter-spacing: 0.01em;
+}
+
+body, #root {
+  width: 100vw;
+  min-width: 0;
+  min-height: 0;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #FDFBEE;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
+  overflow-y: auto;   /* 세로 스크롤만 필요시 */
+}
+
+.home-bg {
+  width: 100vw;
+  min-width: 0;
+  min-height: 0;
+  height: 100vh;
+  background: #FDFBEE;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-container, .home-content {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* Header Styles */
+.home-header {
+  width: 100%;
+  height: 110px;
+  min-height: 110px;
+  background: #ffffff;
+  box-shadow: 0px 2px 4px #00000020;
+  flex-shrink: 0;
+}
+
+.header-content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  background: transparent;
+  padding: 16px 32px 16px 42px;
+  box-shadow: none;
+}
+
+.header-logo {
+  width: 200px;
+  height: 70px;
+  margin-bottom: 4px;
+  margin-right: 60px;
+  object-fit: contain;
+}
+
+.header-menu {
+  color: #000000;
+  font-size: 34px;
+  margin-top: 50px;
+  margin-right: 35px;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.header-menu:last-child {
+  margin-right: 0;
+}
+
+.header-menu.community {
+  flex: none;
+  text-align: left;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: auto;
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+  margin-left: 0;
+  gap: 24px; 
+}
+
+.header-icon {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 4px;
+  object-fit: contain;
+}
+
+.header-icon:last-child {
+  margin-right: 0;
+}
+
+/* 미디어 쿼리 등 추가 스타일은 필요시 아래에 이어서 붙여넣으세요 */
+
+@media (max-width: 900px) {
+  .header-content {
+    padding: 0.7rem 1rem 0.7rem 1rem;
+    gap: 1.2rem;
+  }
+  .header-logo {
+    margin-right: 1rem;
+    height: 32px;
+    width: 120px;
+  }
+  .header-menu {
+    margin-right: 1rem;
+    font-size: 1.01rem;
+    margin-top: 20px;
+  }
+}
+@media (max-width: 600px) {
+  .home-header {
+    height: 48px;
+    min-height: 55px;
+  }
+  .header-content {
+    padding: 0 0.7rem;
+    min-height: 0;
+    align-items: center;
+  }
+  .header-logo {
+    height: 36px;
+    width: 120px;
+    margin-right: 0.5rem;
+    margin-top: 0.3rem;
+  }
+  .hamburger-menu {
+    width: 28px;
+    height: 20px;
+    margin-top: 0.5rem;
+  }
+  .header-menu {
+    font-size: 1.1rem;
+    margin-right: 0.7rem;
+    margin-top: 10px;
+    margin-bottom: 0;
+  }
+  .header-right {
+    gap: 0.5rem;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 0;
+    margin-top: 10px;
+  }
+  .header-links {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+  }
+  .header-icons {
+    gap: 10px;
+  }
+  .header-icon {
+    width: 22px;
+    height: 22px;
+    padding: 1px;
+    margin-bottom: 0;
+    margin-right: 4px;
+  }
+  .mobile-menu-icons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 18px;
+    width: 100%;
+    margin-bottom: 18px;
+  }
+  .mobile-menu-icons img {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+.header-menu:hover {
+  color: #A294F9;
+  text-shadow: 0 2px 12px #a294f930;
+  transform: translateY(-3px) scale(1.04);
+  transition: color 0.18s, text-shadow 0.18s, transform 0.18s;
+}
+
+/* 햄버거 메뉴 버튼 (모바일에서만 보임) */
+.hamburger-menu {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 21px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+.hamburger-menu span {
+  width: 100%;
+  height: 3px;
+  background-color: #333;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* 모바일 사이드 메뉴 */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 80vw;
+  max-width: 340px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -2px 0 16px #0002;
+  z-index: 2000;
+  padding: 32px 20px 20px 20px;
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  flex-direction: column;
+  align-items: flex-start;
+}
+.mobile-menu.open {
+  display: flex;
+  transform: translateX(0);
+}
+.mobile-menu-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 2.2rem;
+  color: #888;
+  cursor: pointer;
+  z-index: 2100;
+}
+.mobile-menu-links {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  margin-bottom: 30px;
+}
+.mobile-menu-link {
+  font-size: 1.15rem;
+  color: #333;
+  text-decoration: none;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.mobile-menu-user {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+.mobile-user-name {
+  font-size: 1.08rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+.mobile-logout-btn, .mobile-signup-btn, .mobile-login-btn {
+  width: 100%;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 12px 0;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow: 0 1px 4px #0001;
+  display: block;
+  border: none;
+}
+.mobile-logout-btn {
+  background: #f5f5f5;
+  color: #333;
+}
+.mobile-signup-btn {
+  background: #A294F9;
+  color: white;
+  text-decoration: none;
+}
+.mobile-login-btn {
+  background: #f5f5f5;
+  color: #333;
+  text-decoration: none;
+}
+@media (max-width: 600px) {
+  .desktop-menu {
+    display: none !important;
+  }
+  .hamburger-menu {
+    display: flex;
+  }
+  .mobile-menu {
+    display: none;
+  }
+} 

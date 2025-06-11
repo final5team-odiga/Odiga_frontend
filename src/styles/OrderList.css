@@ -1,0 +1,146 @@
+.OrderList-container {
+  max-width: 800px;
+  margin: 48px auto 32px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 6px 32px #a294f11a;
+  padding: 2.5rem 1.5rem 2rem 1.5rem;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.OrderList-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #A294F9;
+  margin-bottom: 2.2rem;
+  text-align: center;
+}
+.OrderList-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+.OrderList-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem;
+  background: #fafaff;
+  border-radius: 1.2rem;
+  box-shadow: 0 2px 12px #a294f91a;
+  border: 1px solid #edeaff;
+}
+.OrderList-info {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.OrderList-id {
+  font-weight: 600;
+  color: #A294F9;
+}
+.OrderList-date, .OrderList-status, .OrderList-amount {
+  color: #555;
+}
+.OrderList-detail-btn {
+  height: 40px;
+  min-width: 110px;
+  font-size: 1.07rem;
+  border-radius: 1.2rem;
+  padding: 0 1.5rem;
+  font-weight: 500;
+  background: #A294F9;
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px #a294f91a;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.OrderList-detail-btn:hover {
+  background: #6c63ff;
+  color: #fff;
+  box-shadow: 0 4px 18px #a294f930;
+}
+@media (max-width: 600px) {
+  .OrderList-container {
+    max-width: 98vw;
+    padding: 1.2rem 0.3rem 1.2rem 0.3rem;
+  }
+  .OrderList-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+.OrderList-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}
+.OrderList-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+}
+.OrderList-row {
+  display: flex;
+  align-items: center;
+  padding: 0.7rem 0.5rem;
+  border-bottom: 1px solid #eee;
+  font-size: 1.05rem;
+  background: #fff;
+}
+.OrderList-row.header {
+  font-weight: 700;
+  background: #f7f7fa;
+  color: #A294F9;
+  border-bottom: 2px solid #A294F9;
+}
+.OrderList-row > span {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.OrderList-row > span:nth-child(2) {
+  flex: 0 0 60px;
+}
+.OrderList-noimg {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.order-amount {
+  text-align: right;
+  font-weight: 600;
+  color: #222;
+}
+.order-status {
+  color: #A294F9;
+  font-weight: 600;
+}
+.OrderList-row:hover {
+  background: #f5f5ff;
+}
+@media (max-width: 600px) {
+  .OrderList-row > span {
+    font-size: 0.97rem;
+    padding: 0 2px;
+  }
+  .OrderList-row > span:nth-child(2) {
+    flex: 0 0 38px;
+  }
+  .OrderList-image, .OrderList-noimg {
+    width: 38px;
+    height: 38px;
+  }
+} 

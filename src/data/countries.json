@@ -1,0 +1,32 @@
+{
+  "countries": [
+    {
+      "code": "KR",
+      "name": "대한민국",
+      "name_en": "South Korea",
+      "continent": "Asia",
+      "region": "East Asia"
+    },
+    {
+      "code": "JP",
+      "name": "일본",
+      "name_en": "Japan",
+      "continent": "Asia",
+      "region": "East Asia"
+    },
+    {
+      "code": "US",
+      "name": "미국",
+      "name_en": "United States",
+      "continent": "North America",
+      "region": "North America"
+    },
+    {
+      "code": "CN",
+      "name": "중국",
+      "name_en": "China",
+      "continent": "Asia",
+      "region": "East Asia"
+    }
+  ]
+} 

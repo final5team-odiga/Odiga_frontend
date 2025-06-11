@@ -1,0 +1,95 @@
+/* 공통 모바일 스타일 */
+@media (max-width: 600px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+
+  button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  input, textarea, select {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+
+  .container {
+    padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .flex-row {
+    flex-direction: column;
+  }
+
+  .flex-column {
+    flex-direction: column;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+
+  .hide-on-mobile {
+    display: none;
+  }
+
+  .show-on-mobile {
+    display: block;
+  }
+}
+
+/* 태블릿 스타일 */
+@media (min-width: 601px) and (max-width: 900px) {
+  body {
+    font-size: 15px;
+  }
+
+  .container {
+    padding: 1.5rem;
+    max-width: 90%;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 데스크톱 스타일 */
+@media (min-width: 901px) {
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hide-on-desktop {
+    display: none;
+  }
+} 
