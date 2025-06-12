@@ -13,29 +13,28 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axiosInstance.post('/auth/login/', {
-        username: input1,
-        password: input2
+      const formData = new FormData();
+      formData.append('userID', input1);
+      formData.append('password', input2);
+
+      const res = await axiosInstance.post('/auth/login/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
       
       if (res.data.success) {
-        // 토큰 저장
-        if (res.data.token) {
-          localStorage.setItem('token', res.data.token);
-        }
-        
-        // 사용자 정보 저장
-        if (res.data.user) {
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-        }
-        
         navigate('/');
       } else {
-        alert('로그인에 실패했습니다: ' + (res.data.message || '알 수 없는 오류'));
+        alert('로그인에 실패했습니다: ' + (res.data.error || '알 수 없는 오류'));
       }
     } catch (error) {
       console.error('로그인 중 오류 발생:', error);
-      alert('로그인 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
+      if (error.response?.status === 400) {
+        alert('아이디 또는 비밀번호가 잘못되었습니다.');
+      } else {
+        alert('로그인 중 오류가 발생했습니다: ' + (error.response?.data?.error || error.message));
+      }
     }
   };
 
