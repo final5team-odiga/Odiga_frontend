@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "/api";
+const BASE_URL = "/api"; // 상대 경로로 유지
 
 // 자체 로그인 시스템 경로들 (토큰이 필요한 경우)
 const SELF_AUTH_ROUTES = [
@@ -27,7 +27,9 @@ const getAuthInfo = async () => {
   authCheckPromise = (async () => {
     try {
       console.log("Fetching auth info from /.auth/me");
-      const response = await fetch("/.auth/me");
+      const response = await fetch("/.auth/me", {
+        credentials: "include"    // 쿠키를 함께 전송
+      });
       const authInfo = await response.json();
 
       // 캐싱 (5분간 유효)
@@ -51,7 +53,7 @@ const getAuthInfo = async () => {
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true,
+  withCredentials: true,  // axios 요청에도 쿠키 전송
   timeout: 720000,
 });
 

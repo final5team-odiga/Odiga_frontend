@@ -3,96 +3,25 @@
     "apiRuntime": "node:20"
   },
   "navigationFallback": {
-    "rewrite": "/index.html"
+    "rewrite": "/index.html",
+    "exclude": ["/images/*", "/css/*", "/js/*", "/api/*", "/.auth/*"]
   },
   "routes": [
     {
-      "route": "/.auth/me",
+      "route": "/api/auth/login*",
       "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/auth/login/",
+      "route": "/api/auth/signup*",
       "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/auth/signup/",
+      "route": "/api/auth/check_userid*",
       "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/auth/check_userid/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/articles/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/articles/*",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/articles/*/comments/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/articles/*/comments/*",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/articles/*/like/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/profile/mypage/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/profile/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/magazine/generate-async/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/magazine/status/*",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/magazine/metadata/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/storage/images/upload/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/storage/images/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/storage/texts/upload/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/storage/texts/list/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/storage/magazines/list/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/storage/outputs/list/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/storage/download-output/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/speech/tts/",
-      "allowedRoles": ["anonymous"]
+      "route": "/api/*",
+      "allowedRoles": ["authenticated"]
     },
     {
       "route": "/*",
@@ -102,8 +31,15 @@
   ],
   "responseOverrides": {
     "401": {
-      "statusCode": 302,
-      "redirect": "/.auth/login/aad"
+      "redirect": "/.auth/login/aad",
+      "statusCode": 302
+    },
+    "403": {
+      "redirect": "/.auth/login/aad",
+      "statusCode": 302
+    },
+    "404": {
+      "rewrite": "/index.html"
     }
   }
 }
