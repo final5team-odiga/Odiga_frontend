@@ -1,9 +1,5 @@
 import axios from "axios";
-
-const BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://odigawepapp.azurewebsites.net/api" // Azure Web App + /api 경로
-    : "http://localhost:8000/api"; // 로컬 개발용
+import BASE_URL from "../config";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -25,4 +21,4 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-export default axiosInstance;
+export default axiosInstance; 

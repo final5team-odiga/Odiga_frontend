@@ -362,7 +362,7 @@ const WorldMapSVG = ({ searchTerm }) => {
                     );
                 })}
             </svg>
-            {tooltip && <Tooltip {...tooltip} />}
+            {tooltip && tooltip.text && <Tooltip {...tooltip} />}
             <div
                 style={{
                     position: "absolute",
