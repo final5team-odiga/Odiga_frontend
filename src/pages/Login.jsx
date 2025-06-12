@@ -30,6 +30,12 @@ export default function Login() {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   const handleSignUp = () => {
     navigate('/agreement');
   };
@@ -58,6 +64,7 @@ export default function Login() {
                     value={input1}
                     onChange={(event)=>onChangeInput1(event.target.value)}
                     className="id-input"
+                    onKeyPress={handleKeyPress}
                   />
                   <div className="password-container">
                     <input
@@ -66,6 +73,7 @@ export default function Login() {
                       value={input2}
                       onChange={(event)=>onChangeInput2(event.target.value)}
                       className="password-input"
+                      onKeyPress={handleKeyPress}
                     />
                     <button
                       type="button"
