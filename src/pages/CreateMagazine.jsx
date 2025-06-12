@@ -313,7 +313,7 @@ export default function CreateMagazine() {
   // 매거진 생성 상태 확인 함수
   const checkMagazineStatus = async (magazineId) => {
     let attempts = 0;
-    const maxAttempts = 60; // 5분 (5초 * 60회)
+    const maxAttempts = 300; // 25분 (5초 * 300회)
     
     const checkStatus = async () => {
       try {

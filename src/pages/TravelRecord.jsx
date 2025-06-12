@@ -118,24 +118,105 @@ const TravelRecord = () => {
       recognitionRef.current.lang = 'ko-KR';
       recognitionRef.current.interimResults = false;
       recognitionRef.current.maxAlternatives = 1;
-      recognitionRef.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setInputMessage(transcript);
-        setIsListening(false);
-      };
-      recognitionRef.current.onerror = () => {
-        setIsListening(false);
-      };
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
     }
+    recognitionRef.current.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInputMessage(transcript);
+      setIsListening(false);
+      // 자동 전송
+      setTimeout(() => {
+        const fakeEvent = { preventDefault: () => {} };
+        handleSendMessage(fakeEvent, transcript);
+      }, 100);
+    };
+    recognitionRef.current.onerror = () => {
+      setIsListening(false);
+    };
+    recognitionRef.current.onend = () => {
+      setIsListening(false);
+    };
     setIsListening(true);
     recognitionRef.current.start();
   };
 
-  // 음성모드: STT
-  const handleVoiceSTT = () => {
+  // 음성모드: 오디 질문 및 TTS 자동 재생
+  useEffect(() => {
+    if (showVoiceMode) {
+      // 음성모드 진입 시 첫 질문부터 시작
+      setCurrentQuestionIndex(0);
+      setVoiceBotText(questions[0].friendly);
+      // 첫 질문이 이미 채팅창에 있는지 확인
+      setMessages(prev => {
+        const alreadyHasFirst = prev.some(
+          m => m.type === 'bot' && m.content === questions[0].friendly
+        );
+        if (alreadyHasFirst) return prev;
+        return [
+          ...prev,
+          {
+            type: 'bot',
+            content: questions[0].friendly,
+            timestamp: new Date().toLocaleTimeString(),
+          }
+        ];
+      });
+      handleVoiceTTS(questions[0].friendly);
+    }
+    // eslint-disable-next-line
+  }, [showVoiceMode]);
+
+  // 음성모드에서 답변 입력 및 다음 질문 진행
+  const handleVoiceAnswer = (answerText) => {
+    // 답변 저장
+    setAnswers(prev => ({
+      ...prev,
+      [questions[currentQuestionIndex].original]: answerText
+    }));
+
+    // 사용자 답변을 채팅창에 추가
+    setMessages(prev => ([
+      ...prev,
+      {
+        type: 'user',
+        content: answerText,
+        timestamp: new Date().toLocaleTimeString(),
+      }
+    ]));
+
+    // 다음 질문 진행
+    if (currentQuestionIndex < questions.length - 1) {
+      const nextIdx = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIdx);
+      setTimeout(() => {
+        setVoiceBotText(questions[nextIdx].friendly);
+        setMessages(prev => ([
+          ...prev,
+          {
+            type: 'bot',
+            content: questions[nextIdx].friendly,
+            timestamp: new Date().toLocaleTimeString(),
+          }
+        ]));
+        handleVoiceTTS(questions[nextIdx].friendly);
+      }, 800);
+    } else {
+      setTimeout(() => {
+        setVoiceBotText('모든 질문에 답변해주셔서 감사합니다! 여행 기록이 완성되었어요.');
+        setMessages(prev => ([
+          ...prev,
+          {
+            type: 'bot',
+            content: '모든 질문에 답변해주셔서 감사합니다! 여행 기록이 완성되었어요.',
+            timestamp: new Date().toLocaleTimeString(),
+          }
+        ]));
+        handleVoiceTTS('모든 질문에 답변해주셔서 감사합니다! 여행 기록이 완성되었어요.');
+      }, 800);
+    }
+  };
+
+  // 음성모드에서 STT로 답변 받기
+  const handleVoiceSTT = async () => {
     if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
       alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
       return;
@@ -148,30 +229,8 @@ const TravelRecord = () => {
     setVoiceBotText('듣고 있어요...');
     recog.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setVoiceBotText('질문을 분석 중입니다...');
-
-      // 사용자 음성을 채팅창에 추가
-      const userMessage = {
-        type: 'user',
-        content: transcript,
-        timestamp: new Date().toLocaleTimeString(),
-      };
-      setMessages(prev => [...prev, userMessage]);
-
-      // 실제 GPT API 연동 대신 예시 답변
-      setTimeout(() => {
-        const answer = `오디의 답변: ${transcript}에 대해 더 알려드릴게요!`;
-        setVoiceBotText(answer);
-        handleVoiceTTS(answer);
-
-        // 봇 응답을 채팅창에 추가
-        const botMessage = {
-          type: 'bot',
-          content: answer,
-          timestamp: new Date().toLocaleTimeString(),
-        };
-        setMessages(prev => [...prev, botMessage]);
-      }, 1200);
+      setVoiceBotText('답변을 확인했어요!');
+      handleVoiceAnswer(transcript);
     };
     recog.onerror = () => {
       setVoiceBotText('음성 인식에 실패했어요. 다시 시도해 주세요.');
@@ -184,14 +243,25 @@ const TravelRecord = () => {
   };
 
   // 음성모드: TTS
-  const handleVoiceTTS = (text) => {
-    if (window.speechSynthesis) {
-      setIsSpeaking(true);
-      const utter = new window.SpeechSynthesisUtterance(text);
-      utter.lang = 'ko-KR';
-      utter.onend = () => setIsSpeaking(false);
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utter);
+  const handleVoiceTTS = async (text) => {
+    try {
+      // TTS API 호출
+      const formData = new FormData();
+      formData.append('text_input', text);
+      
+      const ttsResponse = await axiosInstance.post('/speech/tts/', formData);
+      
+      if (ttsResponse.data.success && ttsResponse.data.audio_data_uri) {
+        // Base64 디코딩 및 음성 재생
+        const audio = new Audio(ttsResponse.data.audio_data_uri);
+        
+        setIsSpeaking(true);
+        await audio.play();
+        audio.onended = () => setIsSpeaking(false);
+      }
+    } catch (error) {
+      console.error('음성 변환 실패:', error);
+      setVoiceBotText('음성 변환에 실패했습니다.');
     }
   };
 
@@ -265,15 +335,16 @@ const TravelRecord = () => {
   }, [infoSelected]);
 
   // 메시지 전송 핸들러 수정
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e, overrideMessage) => {
     e.preventDefault();
     if (!infoSelected) return;
-    if (inputMessage.trim() === '') return;
+    const messageToSend = overrideMessage !== undefined ? overrideMessage : inputMessage;
+    if (messageToSend.trim() === '') return;
 
     // 사용자 메시지 추가
     const userMessage = {
       type: 'user',
-      content: inputMessage,
+      content: messageToSend,
       timestamp: new Date().toLocaleTimeString(),
     };
     setMessages(prev => [...prev, userMessage]);
@@ -289,14 +360,13 @@ const TravelRecord = () => {
             locations[0] || '여행지',
             selectedWeather.replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF\s]/g, '').trim()
           )
-        : currentQuestion.original]: inputMessage
+        : currentQuestion.original]: messageToSend
     }));
 
     // 다음 질문이 있으면 추가
     if (currentQuestionIndex < questions.length - 1) {
       const nextQuestionIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextQuestionIndex);
-      
       setTimeout(() => {
         const nextQuestion = {
           type: 'bot',
@@ -364,20 +434,49 @@ const TravelRecord = () => {
         return uploadResponse.data;
       });
 
-      // 2. 채팅 내용만 텍스트로 저장
+      // 2. 텍스트 형식으로 여행 기록 저장 (템플릿 형식 사용)
+      const textRecord = questions.map((question, index) => {
+        const answer = answers[question.original] || "";
+        return `q${index + 1} ${question.original}
+: ${answer}`;
+      }).join('\n\n');
+
+      // 디버깅을 위한 로그
+      console.log('현재 answers 상태:', answers);
+      console.log('저장될 텍스트:', textRecord);
+
+      // 모든 질문에 답변이 있는지 확인
+      const allQuestionsAnswered = questions.every(question => 
+        answers[question.original] && answers[question.original].trim() !== ''
+      );
+      if (!allQuestionsAnswered) {
+        if (!window.confirm('일부 질문에 답변이 없습니다. 그래도 저장하시겠습니까?')) {
+          return;
+        }
+      }
+
+      // 답변이 입력된 질문만 필터링
+      const filteredAnswers = questions.filter(question => 
+        answers[question.original] && answers[question.original].trim() !== ''
+      );
+      if (filteredAnswers.length === 0) {
+        alert('저장할 답변이 없습니다.');
+        return;
+      }
+
       const chatFormData = new FormData();
       chatFormData.append('magazine_id', 'temp_magazine_id');
-      chatFormData.append('text', JSON.stringify(messages)); // 채팅 내용만 저장
+      chatFormData.append('text', textRecord);
 
       const chatResponse = await axiosInstance.post('/storage/texts/upload/', chatFormData);
       if (chatResponse.status !== 200 && chatResponse.status !== 201) {
-        throw new Error('채팅 내용 저장 실패');
+        throw new Error('여행 기록 저장 실패');
       }
 
       // 3. 메타데이터 저장 (이모티콘 제거)
       const metadata = {
         locations,
-        season: selectedSeason.replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF\s]/g, '').trim(), // 한글만 추출
+        season: selectedSeason.replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF\s]/g, '').trim(),
         weather: selectedWeather.replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF\s]/g, '').trim(),
         temperature: selectedTemperature.replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF\s]/g, '').trim(),
         mood: selectedMood.replace(/[^\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uD7B0-\uD7FF\s]/g, '').trim(),
@@ -405,6 +504,7 @@ const TravelRecord = () => {
       setSelectedWeather('');
       setSelectedTemperature('');
       setSelectedMood('');
+      setAnswers({});
 
     } catch (error) {
       console.error('저장 중 오류 발생:', error);
@@ -448,6 +548,15 @@ const TravelRecord = () => {
     } finally {
       setCreatingFolder(false);
     }
+  };
+
+  // 음성모드 버튼 클릭 핸들러
+  const handleVoiceModeClick = () => {
+    if (!infoSelected) {
+      alert('왼쪽에서 여행 정보(장소, 계절, 날씨, 기온, 기분 등)를 먼저 선택해 주세요.');
+      return;
+    }
+    setShowVoiceMode(true);
   };
 
   return (
@@ -594,7 +703,7 @@ const TravelRecord = () => {
             ))}
           </div>
 
-          <form onSubmit={handleSendMessage} className="chat-input-form">
+          <form onSubmit={e => handleSendMessage(e)} className="chat-input-form">
             <input
               type="text"
               value={inputMessage}
@@ -607,7 +716,11 @@ const TravelRecord = () => {
             </button>
             <button type="submit" disabled={!infoSelected}>전송</button>
           </form>
-          <button className="voice-mode-btn" onClick={() => setShowVoiceMode(true)}>
+          <button
+            className={`voice-mode-btn${!infoSelected ? ' disabled' : ''}`}
+            onClick={handleVoiceModeClick}
+            disabled={!infoSelected}
+          >
             <img src="/images/voice.png" alt="음성모드" className="voice-mode-icon" style={{marginRight: '0.5rem', width: '1.5em', height: '1.5em'}} />
             음성모드
           </button>
@@ -656,11 +769,13 @@ const TravelRecord = () => {
           <div className="voice-mode-center">
             <img src="/images/odi.png" className={`voice-odi-avatar${isSpeaking ? ' speaking' : ''}`} alt="오디" />
             <div className="voice-odi-text">{voiceBotText}</div>
+            <div className="voice-mode-controls" style={{marginTop: '2rem'}}>
+              <button className="voice-mic-btn" onClick={handleVoiceSTT} disabled={isListening} title="음성 입력" style={{fontSize:'2.5rem', width:'80px', height:'80px'}}>
+                <FaMicrophone />
+              </button>
+            </div>
           </div>
           <div className="voice-mode-controls">
-            <button className="voice-mic-btn" onClick={handleVoiceSTT} disabled={isListening} title="음성 입력">
-              <FaMicrophone />
-            </button>
             <button className="voice-close-btn" onClick={closeVoiceMode} title="닫기">
               <FaTimes />
             </button>
