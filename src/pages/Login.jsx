@@ -15,8 +15,7 @@ export default function Login() {
       const data = await loginApi(input1, input2);
       if (data.success) {
         // 로그인 성공 시 localStorage에 정보 저장
-        localStorage.setItem("userID", data.userID);
-        // userName은 마이페이지 등에서 추가로 받아올 수 있음. 임시로 userID로 저장
+        localStorage.setItem("token", data.userID);
         localStorage.setItem("userName", data.userID);
         navigate('/');
       } else {

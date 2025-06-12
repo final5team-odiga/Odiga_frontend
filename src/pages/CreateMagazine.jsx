@@ -39,7 +39,6 @@ export default function CreateMagazine() {
   const [folderList, setFolderList] = useState([]);
   const [aiImages, setAiImages] = useState([]); // 이미지 URL 배열
   const [aiTexts, setAiTexts] = useState([]); // 텍스트 파일 배열
-  const [aiOutput, setAiOutput] = useState('/magazine_result_firstuser_magazine.pdf'); // PDF 경로 설정
   const [aiGenerating, setAIGenerating] = useState(false);
   const [showAIPopup, setShowAIPopup] = useState(false); // 팝업이 기본적으로 보이지 않도록 수정
 
@@ -313,7 +312,7 @@ export default function CreateMagazine() {
   // 매거진 생성 상태 확인 함수
   const checkMagazineStatus = async (magazineId) => {
     let attempts = 0;
-    const maxAttempts = 300; // 25분 (5초 * 300회)
+    const maxAttempts = 600; // 50분 (5초 * 600회)
     
     const checkStatus = async () => {
       try {

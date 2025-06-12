@@ -9,7 +9,7 @@ export default function HeaderNav() {
   const userName = localStorage.getItem("userName");
 
   const handleLogout = () => {
-    localStorage.removeItem("userID");
+    localStorage.removeItem("token");
     localStorage.removeItem("userName");
     setIsMenuOpen(false);
     navigate("/login");

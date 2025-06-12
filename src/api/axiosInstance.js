@@ -1,17 +1,17 @@
 import axios from "axios";
 
-const BASE_URL = "https://odigawepapp.azurewebsites.net/api"; // Static Web Apps 프록시 사용
+const BASE_URL = "https://odigawepapp.azurewebsites.net/api"; // Azure 배포용
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  withCredentials: true, // 필요시
+  withCredentials: true,
   timeout: 720000, // 12분 (720,000ms)
 });
 
 // 요청 인터셉터 추가
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('userID');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
