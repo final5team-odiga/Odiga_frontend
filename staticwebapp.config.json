@@ -49,5 +49,10 @@
       "statusCode": 302,
       "redirect": "/.auth/login/aad"
     }
-  }
+  },
+  "networking": {
+    "allowedIpRanges": [],
+    "enablePrivateAccess": false
+  },
+  "apiUrl": "https://odigawepapp.azurewebsites.net/api"
 }
