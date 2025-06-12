@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "odigawepapp.azurewebsites.net/api"; // 상대 경로로 유지
+const BASE_URL = "https://odigawepapp.azurewebsites.net/api"; // 상대 경로로 유지
 
 // 자체 로그인 시스템 경로들 (토큰이 필요한 경우)
 const SELF_AUTH_ROUTES = [
