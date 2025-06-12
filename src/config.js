@@ -1,2 +1,2 @@
-const BASE_URL = "https://odigawepapp.azurewebsites.net/api";
+const BASE_URL = "/api";
 export default BASE_URL;

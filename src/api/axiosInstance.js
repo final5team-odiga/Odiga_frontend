@@ -1,14 +1,14 @@
 import axios from "axios";
 
-const BASE_URL = "https://odigawepapp.azurewebsites.net/api"; // 직접 BASE_URL 지정
+const BASE_URL = "/api"; // 상대 경로로 유지
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: 720000, // 12분 (720,000ms)
-  withCredentials: true  // 세션 쿠키 전송을 위해 필요
+  withCredentials: true,
+  timeout: 720000,
 });
 
-// 요청 인터셉터 추가
+// 요청 인터셉터는 동일하게 유지
 axiosInstance.interceptors.request.use(
   (config) => {
     const userID = localStorage.getItem('userID');
@@ -17,14 +17,6 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// 응답 인터셉터 추가
-axiosInstance.interceptors.response.use(
-  (response) => response,
   (error) => {
     return Promise.reject(error);
   }

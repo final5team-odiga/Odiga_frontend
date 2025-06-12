@@ -4,8 +4,8 @@ import "../styles/Login.css";
 import axiosInstance from "../api/axiosInstance";
 
 export default function Login() {
-  const [input1, onChangeInput1] = useState('');
-  const [input2, onChangeInput2] = useState('');
+  const [input1, onChangeInput1] = useState("");
+  const [input2, onChangeInput2] = useState("");
   const [keepLogin, setKeepLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
@@ -14,44 +14,45 @@ export default function Login() {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append('userID', input1);
-      formData.append('password', input2);
+      formData.append("userID", input1);
+      formData.append("password", input2);
 
-      const res = await axiosInstance.post('/auth/login/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
+      const res = await axiosInstance.post("/auth/login/", formData, {});
+
       if (res.data.success) {
         if (res.data.userID) {
-          localStorage.setItem('userID', res.data.userID);
+          localStorage.setItem("userID", res.data.userID);
         }
         if (res.data.userName) {
-          localStorage.setItem('userName', res.data.userName);
+          localStorage.setItem("userName", res.data.userName);
         }
-        navigate('/');
+        navigate("/");
       } else {
-        alert('로그인에 실패했습니다: ' + (res.data.error || '알 수 없는 오류'));
+        alert(
+          "로그인에 실패했습니다: " + (res.data.error || "알 수 없는 오류")
+        );
       }
     } catch (error) {
-      console.error('로그인 중 오류 발생:', error);
+      console.error("로그인 중 오류 발생:", error);
       if (error.response?.status === 400) {
-        alert('아이디 또는 비밀번호가 잘못되었습니다.');
+        alert("아이디 또는 비밀번호가 잘못되었습니다.");
       } else {
-        alert('로그인 중 오류가 발생했습니다: ' + (error.response?.data?.error || error.message));
+        alert(
+          "로그인 중 오류가 발생했습니다: " +
+            (error.response?.data?.error || error.message)
+        );
       }
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleLogin(e);
     }
   };
 
   const handleSignUp = () => {
-    navigate('/agreement');
+    navigate("/agreement");
   };
 
   return (
@@ -68,7 +69,7 @@ export default function Login() {
                 <div className="login-form">
                   <div className="logo-container">
                     <img
-                      src="images/odiga-logo.svg" 
+                      src="images/odiga-logo.svg"
                       className="logo"
                       alt="로고"
                     />
@@ -76,7 +77,7 @@ export default function Login() {
                   <input
                     placeholder={"아이디"}
                     value={input1}
-                    onChange={(event)=>onChangeInput1(event.target.value)}
+                    onChange={(event) => onChangeInput1(event.target.value)}
                     className="id-input"
                     onKeyPress={handleKeyPress}
                   />
@@ -85,7 +86,7 @@ export default function Login() {
                       type={showPassword ? "text" : "password"}
                       placeholder={"비밀번호"}
                       value={input2}
-                      onChange={(event)=>onChangeInput2(event.target.value)}
+                      onChange={(event) => onChangeInput2(event.target.value)}
                       className="password-input"
                       onKeyPress={handleKeyPress}
                     />
@@ -98,13 +99,24 @@ export default function Login() {
                       {showPassword ? (
                         <img src="images/eye-open.png" alt="비밀번호 보이기" />
                       ) : (
-                        <img src="images/eye-closed.png" alt="비밀번호 숨기기" />
+                        <img
+                          src="images/eye-closed.png"
+                          alt="비밀번호 숨기기"
+                        />
                       )}
                     </button>
                   </div>
-                  <button type="button" className="keep-login" onClick={() => setKeepLogin(!keepLogin)}>
+                  <button
+                    type="button"
+                    className="keep-login"
+                    onClick={() => setKeepLogin(!keepLogin)}
+                  >
                     <img
-                      src={keepLogin ? "/images/check-on2.png" : "/images/check-off1.png"}
+                      src={
+                        keepLogin
+                          ? "/images/check-on2.png"
+                          : "/images/check-off1.png"
+                      }
                       className="checkbox-icon"
                       alt="체크박스"
                     />
@@ -112,18 +124,14 @@ export default function Login() {
                       {"로그인 상태 유지"}
                     </span>
                   </button>
-                  <button 
-                    onClick={handleLogin}
-                    className="login-button">
-                    <span className="login-button-text">
-                      {"로 그 인"}
-                    </span>
+                  <button onClick={handleLogin} className="login-button">
+                    <span className="login-button-text">{"로 그 인"}</span>
                   </button>
                 </div>
-                <img 
-                    src="/images/magazine1.png" 
-                    className="magazine-bg-img_1" 
-                    alt="" 
+                <img
+                  src="/images/magazine1.png"
+                  className="magazine-bg-img_1"
+                  alt=""
                 />
                 <img
                   src="/images/magazine2.png"
@@ -138,25 +146,24 @@ export default function Login() {
                   className="signup-link-text"
                   tabIndex={0}
                   role="button"
-                  style={{ marginLeft: '6px' }}
+                  style={{ marginLeft: "6px" }}
                 >
                   회원가입
                 </span>
               </div>
             </div>
-            <button 
+            <button
               className="language-button"
-              onClick={()=>alert("언어 변경 기능은 준비 중입니다.")}>
+              onClick={() => alert("언어 변경 기능은 준비 중입니다.")}
+            >
               <img
-                src="images/language.png" 
+                src="images/language.png"
                 className="language-icon"
                 alt="언어 아이콘"
               />
-              <span className="language-text">
-                {"한국어"}
-              </span>
-                <img
-                  src="images/arrow.svg" 
+              <span className="language-text">{"한국어"}</span>
+              <img
+                src="images/arrow.svg"
                 className="arrow-icon"
                 alt="화살표 아이콘"
               />
