@@ -7,6 +7,18 @@
   },
   "routes": [
     {
+      "route": "/api/auth/login/",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/api/auth/signup/",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/api/auth/check_userid/",
+      "allowedRoles": ["anonymous"]
+    },
+    {
       "route": "/api/*",
       "allowedRoles": ["authenticated"]
     },
@@ -15,5 +27,12 @@
       "serve": "/index.html",
       "statusCode": 200
     }
-  ]
+  ],
+  "responseOverrides": {
+    "401": {
+      "statusCode": 302,
+      "redirect": "/.auth/login/aad"
+    }
+  }
 }
+
