@@ -2,13 +2,14 @@ import axios from "axios";
 
 const BASE_URL = "/api"; // 상대 경로로 유지
 
+
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
   timeout: 720000,
 });
 
-// 요청 인터셉터는 동일하게 유지
+// 요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
     const userID = localStorage.getItem('userID');
@@ -18,6 +19,20 @@ axiosInstance.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// 응답 인터셉터 추가 (401 오류 자동 처리)
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.log("401 오류 감지 - 로그인 페이지로 리디렉션");
+      localStorage.removeItem("userID");
+      localStorage.removeItem("userName");
+      window.location.href = "/.auth/login/aad";
+    }
     return Promise.reject(error);
   }
 );

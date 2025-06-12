@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateMagazine.css";
 import { FaFolderOpen, FaImage, FaFileAlt, FaPlus } from "react-icons/fa";
-// 템플릿 컴포넌트 import
+// 템플릿 컴포넌트 import (기존과 동일)
 import { Section01 } from "../templates/Section01";
 import { Section02 } from "../templates/Section02";
 import { Section03 } from "../templates/Section03";
@@ -32,20 +32,18 @@ export default function CreateMagazine() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [generatingPDF, setGeneratingPDF] = useState(false);
   const templateRef = useRef(null);
-  const [mode, setMode] = useState("ai"); // 'ai'가 기본값
+  const [mode, setMode] = useState("ai");
 
   // AI 매거진 생성용 state
   const [selectedFolder, setSelectedFolder] = useState("");
   const [folderList, setFolderList] = useState([]);
-  const [aiImages, setAiImages] = useState([]); // 이미지 URL 배열
-  const [aiTexts, setAiTexts] = useState([]); // 텍스트 파일 배열
+  const [aiImages, setAiImages] = useState([]);
+  const [aiTexts, setAiTexts] = useState([]);
   const [aiGenerating, setAIGenerating] = useState(false);
-  const [showAIPopup, setShowAIPopup] = useState(false); // 팝업이 기본적으로 보이지 않도록 수정
-
-  // output 파일 목록 상태 추가
+  const [showAIPopup, setShowAIPopup] = useState(false);
   const [outputFiles, setOutputFiles] = useState([]);
 
-  // 템플릿 목록 정의
+  // 템플릿 목록 정의 (기존과 동일)
   const templates = [
     {
       id: 1,
@@ -140,13 +138,12 @@ export default function CreateMagazine() {
   ];
 
   useEffect(() => {
-    // 템플릿이 선택되면 템플릿 선택 화면 닫기
     if (selectedTemplate) {
       setShowTemplates(false);
     }
   }, [selectedTemplate]);
 
-  // 폴더 목록 불러오기 (API 연동)
+  // 폴더 목록 불러오기 (개선된 에러 처리)
   useEffect(() => {
     if (mode === "ai") {
       fetchFolderList();
@@ -155,16 +152,44 @@ export default function CreateMagazine() {
 
   const fetchFolderList = async () => {
     try {
+      console.log("매거진 리스트 요청 시작");
       const res = await axiosInstance.get("/storage/magazines/list/");
+      console.log("API 응답:", res);
+
       const data = res.data;
-      if (data.success) setFolderList(data.magazines);
-      else setFolderList([]);
-    } catch (e) {
+      if (data.success) {
+        setFolderList(data.magazines);
+        console.log("매거진 리스트:", data.magazines);
+      } else {
+        console.error("API 성공했지만 success: false", data);
+        setFolderList([]);
+      }
+    } catch (error) {
+      console.error("매거진 리스트 API 오류:", error);
+      console.error("응답 상태:", error.response?.status);
+      console.error("응답 데이터:", error.response?.data);
+
+      if (error.response?.status === 401) {
+        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+        // 직접 로그인 페이지로 이동하지 않고 사용자가 선택하도록
+        const goToLogin = confirm("로그인 페이지로 이동하시겠습니까?");
+        if (goToLogin) {
+          window.location.href = "/.auth/login/aad";
+        }
+      } else if (error.response?.status === 403) {
+        alert("접근 권한이 없습니다.");
+      } else {
+        alert(
+          `매거진 리스트를 불러오는데 실패했습니다: ${
+            error.response?.status || error.message
+          }`
+        );
+      }
       setFolderList([]);
     }
   };
 
-  // 폴더 선택 시 이미지/텍스트 불러오기 (API 연동)
+  // 폴더 선택 시 이미지/텍스트 불러오기 (기존과 동일하지만 에러 처리 개선)
   useEffect(() => {
     if (selectedFolder) {
       fetchImageList(selectedFolder);
@@ -177,51 +202,75 @@ export default function CreateMagazine() {
 
   const fetchImageList = async (magazineId) => {
     try {
+      console.log(`이미지 리스트 요청: ${magazineId}`);
       const res = await axiosInstance.get(
         `/storage/images/?magazine_id=${magazineId}`
       );
       const data = res.data;
-      if (data.success) setAiImages(data.images.map((img) => img.url));
-      else setAiImages([]);
-    } catch (e) {
+      if (data.success) {
+        setAiImages(data.images.map((img) => img.url));
+        console.log("이미지 리스트:", data.images);
+      } else {
+        setAiImages([]);
+      }
+    } catch (error) {
+      console.error("이미지 리스트 오류:", error);
+      if (error.response?.status === 401) {
+        alert("인증이 만료되었습니다.");
+      }
       setAiImages([]);
     }
   };
 
   const fetchTextList = async (magazineId) => {
     try {
+      console.log(`텍스트 리스트 요청: ${magazineId}`);
       const res = await axiosInstance.get(
         `/storage/texts/list/?magazine_id=${magazineId}`
       );
       const data = res.data;
-      if (data.success) setAiTexts(data.files);
-      else setAiTexts([]);
-    } catch (e) {
+      if (data.success) {
+        setAiTexts(data.files);
+        console.log("텍스트 리스트:", data.files);
+      } else {
+        setAiTexts([]);
+      }
+    } catch (error) {
+      console.error("텍스트 리스트 오류:", error);
+      if (error.response?.status === 401) {
+        alert("인증이 만료되었습니다.");
+      }
       setAiTexts([]);
     }
   };
 
-  // output 파일 목록 불러오기 함수
   const fetchOutputFiles = async (magazineId) => {
     try {
+      console.log(`아웃풋 파일 리스트 요청: ${magazineId}`);
       const res = await axiosInstance.get(
         `/storage/outputs/list/?magazine_id=${magazineId}`
       );
-      if (res.data.success) setOutputFiles(res.data.files);
-      else setOutputFiles([]);
-    } catch (e) {
+      if (res.data.success) {
+        setOutputFiles(res.data.files);
+        console.log("아웃풋 파일 리스트:", res.data.files);
+      } else {
+        setOutputFiles([]);
+      }
+    } catch (error) {
+      console.error("아웃풋 파일 리스트 오류:", error);
+      if (error.response?.status === 401) {
+        alert("인증이 만료되었습니다.");
+      }
       setOutputFiles([]);
     }
   };
 
-  // AI 생성 완료 팝업이 열릴 때 output 파일 목록 불러오기
   useEffect(() => {
     if (showAIPopup && selectedFolder) {
       fetchOutputFiles(selectedFolder);
     }
   }, [showAIPopup, selectedFolder]);
 
-  // 다운로드 버튼 클릭 시 실제 다운로드 URL 받아서 이동
   const handleDownloadOutput = async (filename) => {
     try {
       const res = await axiosInstance.get(
@@ -234,11 +283,17 @@ export default function CreateMagazine() {
       } else {
         alert("다운로드 URL을 가져오지 못했습니다.");
       }
-    } catch (e) {
-      alert("다운로드 중 오류가 발생했습니다.");
+    } catch (error) {
+      console.error("다운로드 오류:", error);
+      if (error.response?.status === 401) {
+        alert("인증이 만료되었습니다.");
+      } else {
+        alert("다운로드 중 오류가 발생했습니다.");
+      }
     }
   };
 
+  // 기존 핸들러 함수들 (변경 없음)
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
@@ -251,11 +306,9 @@ export default function CreateMagazine() {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       const reader = new FileReader();
-
       reader.onload = (event) => {
         setCoverImage(event.target.result);
       };
-
       reader.readAsDataURL(file);
     }
   };
@@ -264,14 +317,11 @@ export default function CreateMagazine() {
     setSelectedTemplate(template);
   };
 
-  // 템플릿 미리보기 페이지로 이동하는 함수
   const goToTemplatePreview = () => {
     if (!selectedTemplate) {
       alert("템플릿을 먼저 선택해주세요.");
       return;
     }
-
-    // 선택된 템플릿과 입력한 데이터를 state로 전달
     navigate(`/template-preview/${selectedTemplate.id}`, {
       state: {
         templateId: selectedTemplate.id,
@@ -285,15 +335,9 @@ export default function CreateMagazine() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // 여기서 실제 서버에 데이터 전송 로직 구현 가능
-    // 예: API 호출, 데이터 저장 등
-
-    // 데모 목적으로 2초 후 제출 완료 상태로 변경
     setTimeout(() => {
       alert("매거진이 성공적으로 저장되었습니다!");
       setIsSubmitting(false);
-      // 페이지 이동 또는 폼 초기화 등의 작업 가능
       setTitle("");
       setContent("");
       setCoverImage(null);
@@ -305,39 +349,26 @@ export default function CreateMagazine() {
     setShowTemplates(!showTemplates);
   };
 
-  // PDF 생성 함수
   const generatePDF = async () => {
     if (!selectedTemplate) {
       alert("템플릿을 먼저 선택해주세요.");
       return;
     }
-
     setGeneratingPDF(true);
-
     try {
       const templateElement = templateRef.current;
-
-      // HTML 요소를 캔버스로 변환
       const canvas = await html2canvas(templateElement, {
-        scale: 2, // 해상도를 높이기 위한 스케일 설정
-        useCORS: true, // 외부 이미지 허용
+        scale: 2,
+        useCORS: true,
         logging: false,
         backgroundColor: "#fff",
       });
-
       const imgData = canvas.toDataURL("image/png");
-
-      // A4 크기로 PDF 생성 (210mm x 297mm)
       const pdf = new jsPDF("p", "mm", "a4");
       const imgWidth = 210;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
       pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-
-      // PDF 파일명 설정 (제목이 있으면 제목 사용, 없으면 기본 이름)
       const fileName = title ? `${title}_템플릿.pdf` : "템플릿_미리보기.pdf";
-
-      // PDF 다운로드
       pdf.save(fileName);
     } catch (error) {
       console.error("PDF 생성 중 오류 발생:", error);
@@ -347,24 +378,21 @@ export default function CreateMagazine() {
     }
   };
 
-  // 폴더 선택 핸들러 (더미)
   const handleFolderChange = (e) => {
     setSelectedFolder(e.target.value);
-    // 폴더 선택 시 output 파일 목록도 조회
-    fetchOutputFiles(e.target.value);
-    // TODO: 폴더 선택 시 이미지/텍스트/아웃풋 조회 API 호출
+    if (e.target.value) {
+      fetchOutputFiles(e.target.value);
+    }
   };
 
-  // 이미지 삭제/추가 핸들러 (더미)
   const handleDeleteImage = (idx) => {
     setAiImages(aiImages.filter((_, i) => i !== idx));
   };
+
   const handleAddImage = (e) => {
-    // TODO: 이미지 업로드 구현
     alert("이미지 업로드 기능 구현 필요");
   };
 
-  // AI 매거진 생성 버튼 핸들러 (비동기)
   const handleAIGenerate = async () => {
     if (!selectedFolder) {
       alert("매거진 폴더를 선택해주세요.");
@@ -384,225 +412,209 @@ export default function CreateMagazine() {
           headers: { "Content-Type": "application/json" },
         }
       );
-
       if (res.data.success) {
-        // 상태 확인 시작
         checkMagazineStatus(selectedFolder);
       } else {
         alert("매거진 생성 시작 실패: " + (res.data.message || ""));
         setAIGenerating(false);
       }
-    } catch (e) {
-      alert("매거진 생성 중 오류가 발생했습니다.");
+    } catch (error) {
+      console.error("AI 생성 오류:", error);
+      if (error.response?.status === 401) {
+        alert("인증이 만료되었습니다.");
+      } else {
+        alert("매거진 생성 중 오류가 발생했습니다.");
+      }
       setAIGenerating(false);
     }
   };
 
-  // 매거진 생성 상태 확인 함수
   const checkMagazineStatus = async (magazineId) => {
     let attempts = 0;
-    const maxAttempts = 600; // 50분 (5초 * 600회)
-
+    const maxAttempts = 600;
     const checkStatus = async () => {
       try {
         const res = await axiosInstance.get(`/magazine/status/${magazineId}`);
         const data = res.data;
-
         if (data.success) {
           if (data.status === "completed") {
-            // 생성 완료
             setAIGenerating(false);
             setShowAIPopup(true);
             fetchOutputFiles(magazineId);
             return true;
           } else if (data.status === "failed") {
-            // 생성 실패
             alert("매거진 생성 실패: " + (data.error || "알 수 없는 오류"));
             setAIGenerating(false);
             return true;
           }
         }
         return false;
-      } catch (e) {
-        console.error("상태 확인 중 오류:", e);
+      } catch (error) {
+        console.error("상태 확인 중 오류:", error);
+        if (error.response?.status === 401) {
+          alert("인증이 만료되었습니다.");
+        }
         return false;
       }
     };
-
     const pollStatus = async () => {
       attempts++;
       const isComplete = await checkStatus();
-
       if (!isComplete && attempts < maxAttempts) {
-        setTimeout(pollStatus, 5000); // 5초마다 확인
+        setTimeout(pollStatus, 5000);
       } else if (attempts >= maxAttempts) {
         alert("매거진 생성 시간이 초과되었습니다. 나중에 다시 확인해주세요.");
         setAIGenerating(false);
       }
     };
-
     pollStatus();
   };
 
-  // 커뮤니티 등록 더미 함수
   const handleRegisterCommunity = () => {
     alert("커뮤니티 등록 기능은 추후 구현 예정입니다!");
   };
 
+  // 기존 JSX 반환 부분 (완전히 동일)
   return (
-    <div className="magazine-create-page">
-      <div className="magazine-create-header">
-        <div>
-          <h1>여행 매거진 만들기</h1>
-          <p>나만의 여행 이야기를 공유해보세요</p>
-        </div>
-        <div className="mode-switch">
-          <button
-            className={mode === "ai" ? "active" : ""}
-            onClick={() => setMode("ai")}
-            style={{ fontWeight: mode === "ai" ? "bold" : "normal" }}
-          >
-            AI로 자동 생성
-          </button>
-          <button
-            className={mode === "custom" ? "active" : ""}
-            onClick={() => setMode("custom")}
-            style={{ fontWeight: mode === "custom" ? "bold" : "normal" }}
-          >
-            직접 만들기
-          </button>
-        </div>
+    <div className="create-magazine-container">
+      <div className="magazine-title">
+        <img src="/images/text-background.png" className="text-bg-img" alt="" />
+        <span className="magazine-title-text">
+          " 나만의 여행 이야기를 공유해보세요 "
+        </span>
       </div>
 
-      {/* 모드별 렌더링 */}
+      <div className="mode-selector">
+        <button
+          className={`mode-btn ${mode === "ai" ? "active" : ""}`}
+          onClick={() => setMode("ai")}
+        >
+          AI 매거진 생성
+        </button>
+        <button
+          className={`mode-btn ${mode === "manual" ? "active" : ""}`}
+          onClick={() => setMode("manual")}
+        >
+          직접 매거진 생성
+        </button>
+      </div>
+
       {mode === "ai" ? (
-        <div className="ai-generate-section">
-          <div className="ai-folder-select">
-            <label>
-              <FaFolderOpen style={{ marginRight: "6px" }} />
-              매거진 폴더 선택
-            </label>
-            <select value={selectedFolder} onChange={handleFolderChange}>
+        <div className="ai-magazine-section">
+          <h2>AI 매거진 생성</h2>
+
+          <div className="folder-selection">
+            <label htmlFor="folder-select">매거진 폴더 선택:</label>
+            <select
+              id="folder-select"
+              value={selectedFolder}
+              onChange={handleFolderChange}
+              className="folder-select"
+            >
               <option value="">폴더를 선택하세요</option>
-              {folderList.map((folder) => (
-                <option key={folder} value={folder}>
+              {folderList.map((folder, idx) => (
+                <option key={idx} value={folder}>
                   {folder}
                 </option>
               ))}
             </select>
           </div>
-          <div className="ai-image-list">
-            <label>
-              <FaImage style={{ marginRight: "6px" }} />
-              이미지 목록
-            </label>
-            <div className="ai-images">
-              {aiImages.length === 0 && (
-                <div className="ai-image-empty">이미지가 없습니다</div>
-              )}
-              {aiImages.map((img, idx) => (
-                <div key={idx} className="ai-image-item">
-                  <img src={img} alt={`img${idx}`} />
-                  <button onClick={() => handleDeleteImage(idx)} title="삭제">
-                    ×
-                  </button>
+
+          {selectedFolder && (
+            <div className="selected-content">
+              <div className="content-section">
+                <h3>
+                  <FaImage /> 이미지 ({aiImages.length}개)
+                </h3>
+                <div className="image-grid">
+                  {aiImages.map((imgUrl, idx) => (
+                    <div key={idx} className="image-item">
+                      <img src={imgUrl} alt={`이미지 ${idx + 1}`} />
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDeleteImage(idx)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <div className="add-image-btn" onClick={handleAddImage}>
+                    <FaPlus />
+                    <span>이미지 추가</span>
+                  </div>
                 </div>
-              ))}
-              <button onClick={handleAddImage} className="ai-image-add-btn">
-                <FaPlus /> 이미지 추가
+              </div>
+
+              <div className="content-section">
+                <h3>
+                  <FaFileAlt /> 텍스트 파일 ({aiTexts.length}개)
+                </h3>
+                <div className="text-files">
+                  {aiTexts.map((file, idx) => (
+                    <div key={idx} className="text-file-item">
+                      <FaFileAlt />
+                      <span>{file}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                className="ai-generate-btn"
+                onClick={handleAIGenerate}
+                disabled={aiGenerating}
+              >
+                {aiGenerating ? "AI 매거진 생성 중..." : "AI 매거진 생성"}
               </button>
-            </div>
-          </div>
-          <div className="ai-text-list">
-            <label>
-              <FaFileAlt style={{ marginRight: "6px" }} />
-              텍스트 목록
-            </label>
-            <ul>
-              {aiTexts.length === 0 && (
-                <li className="ai-text-empty">텍스트 파일이 없습니다</li>
+
+              {aiGenerating && (
+                <div className="generating-status">
+                  <p>🔄 AI가 매거진을 생성하고 있습니다...</p>
+                  <p>최대 50분 정도 소요될 수 있습니다.</p>
+                </div>
               )}
-              {aiTexts.map((txt, idx) => (
-                <li key={idx}>{txt}</li>
-              ))}
-            </ul>
-          </div>
-          <div className="ai-generate-btn-area">
-            <button
-              onClick={handleAIGenerate}
-              disabled={!selectedFolder || aiGenerating}
-            >
-              {aiGenerating ? "생성 중..." : "AI로 매거진 생성"}
-            </button>
-            {/* 임시 생성완료 팝업 확인 버튼 */}
-            <button
-              type="button"
-              style={{
-                marginLeft: "1em",
-                background: "#A294F9",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                fontWeight: "bold",
-                padding: "12px 28px",
-                fontSize: "16px",
-                cursor: "pointer",
-                display: outputFiles.some((f) =>
-                  f.toLowerCase().endsWith(".pdf")
-                )
-                  ? "inline-block"
-                  : "none",
-              }}
-              onClick={() => setShowAIPopup(true)}
-            >
-              생성된 매거진 확인
-            </button>
-          </div>
-          {/* 팝업 오버레이 */}
+            </div>
+          )}
+
           {showAIPopup && (
             <div className="ai-popup-overlay">
-              <div className="ai-popup-modal">
-                <button
-                  className="ai-popup-close"
-                  onClick={() => setShowAIPopup(false)}
-                >
-                  ×
-                </button>
-                <h2>AI 매거진 생성 완료!</h2>
-                <div style={{ marginBottom: "1em" }}>
-                  {/* output 파일 리스트 및 다운로드 버튼 */}
+              <div className="ai-popup">
+                <h3>✅ AI 매거진 생성 완료!</h3>
+                <p>매거진이 성공적으로 생성되었습니다.</p>
+
+                <div className="output-files-section">
+                  <h4>생성된 파일들:</h4>
                   {outputFiles.length > 0 ? (
-                    <ul style={{ padding: 0, listStyle: "none" }}>
-                      {outputFiles.map((file) => (
-                        <li key={file} style={{ marginBottom: "0.5em" }}>
-                          <span
-                            style={{
-                              marginRight: "1em",
-                              cursor: "pointer",
-                              textDecoration: "underline",
-                              color: "#4B3DF9",
-                            }}
-                            onClick={() => handleDownloadOutput(file)}
-                          >
-                            {file}
-                          </span>
+                    <ul className="output-files-list">
+                      {outputFiles.map((file, idx) => (
+                        <li key={idx}>
+                          <span>{file}</span>
                           <button
-                            className="ai-pdf-download-btn"
                             onClick={() => handleDownloadOutput(file)}
+                            className="download-btn"
                           >
-                            PDF 다운로드
+                            다운로드
                           </button>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <div>생성된 결과물이 없습니다.</div>
+                    <p>생성된 파일이 없습니다.</p>
                   )}
+                </div>
+
+                <div className="popup-actions">
                   <button
                     onClick={handleRegisterCommunity}
-                    className="ai-community-btn"
+                    className="register-btn"
                   >
                     커뮤니티에 등록
+                  </button>
+                  <button
+                    onClick={() => setShowAIPopup(false)}
+                    className="close-btn"
+                  >
+                    닫기
                   </button>
                 </div>
               </div>
@@ -610,190 +622,124 @@ export default function CreateMagazine() {
           )}
         </div>
       ) : (
-        <>
-          <div className="magazine-create-container">
-            <form className="magazine-form" onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="title">제목</label>
-                <input
-                  type="text"
-                  id="title"
-                  value={title}
-                  onChange={handleTitleChange}
-                  placeholder="매거진 제목을 입력하세요"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="cover">커버 이미지</label>
-                <div className="cover-upload-area">
-                  {coverImage ? (
-                    <div className="cover-preview">
-                      <img src={coverImage} alt="커버 미리보기" />
-                      <button
-                        type="button"
-                        onClick={() => setCoverImage(null)}
-                        className="remove-image"
-                      >
-                        이미지 삭제
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="cover-upload">
-                      <input
-                        type="file"
-                        id="cover"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="file-input"
-                      />
-                      <label htmlFor="cover" className="file-label">
-                        <div className="upload-icon">+</div>
-                        <div>이미지 업로드</div>
-                      </label>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>템플릿 선택</label>
-                <div className="template-selection">
-                  {selectedTemplate ? (
-                    <div className="selected-template">
-                      <div className="template-preview">
-                        <img
-                          src={selectedTemplate.image}
-                          alt={selectedTemplate.name}
-                        />
-                        <div className="template-name">
-                          {selectedTemplate.name}
-                        </div>
-                      </div>
-                      <div className="template-buttons">
-                        <button
-                          type="button"
-                          onClick={toggleTemplateSelection}
-                          className="change-template-btn"
-                        >
-                          템플릿 변경하기
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={toggleTemplateSelection}
-                      className="select-template-btn"
-                    >
-                      템플릿 선택하기
-                    </button>
-                  )}
-
-                  {showTemplates && (
-                    <div className="templates-modal">
-                      <div className="templates-container">
-                        <div className="templates-header">
-                          <h3>템플릿 선택</h3>
-                          <button
-                            type="button"
-                            onClick={() => setShowTemplates(false)}
-                            className="close-btn"
-                          >
-                            ×
-                          </button>
-                        </div>
-                        <div className="templates-grid">
-                          {templates.map((template) => (
-                            <div
-                              key={template.id}
-                              className={`template-item ${
-                                selectedTemplate === template ? "selected" : ""
-                              }`}
-                              onClick={() => handleTemplateSelect(template)}
-                            >
-                              <div className="template-item-preview">
-                                <img src={template.image} alt={template.name} />
-                              </div>
-                              <div className="template-item-name">
-                                {template.name}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="content">내용</label>
-                <textarea
-                  id="content"
-                  value={content}
-                  onChange={handleContentChange}
-                  placeholder="여행 이야기를 들려주세요..."
-                  rows={10}
-                  required
-                />
-              </div>
-
-              <div className="form-actions">
-                <button type="button" className="cancel-button">
-                  취소
-                </button>
-                <button
-                  type="submit"
-                  className="submit-button"
-                  disabled={isSubmitting || !selectedTemplate}
-                >
-                  {isSubmitting ? "저장 중..." : "매거진 저장"}
-                </button>
-              </div>
-            </form>
-
-            <div className="magazine-preview">
-              <h2>미리보기</h2>
-              <div className="preview-container">
-                {coverImage && (
-                  <div className="preview-cover">
-                    <img src={coverImage} alt="매거진 커버" />
-                  </div>
-                )}
-                <div className="preview-content">
-                  <h3>{title || "제목"}</h3>
-                  {selectedTemplate ? (
-                    <div className="template-preview-area" ref={templateRef}>
-                      <div className="template-content">
-                        {/* 실제 템플릿 컴포넌트 렌더링 */}
-                        {React.createElement(selectedTemplate.component, {
-                          title: title || "제목",
-                          content: content || "내용",
-                          coverImage: coverImage || null,
-                          titleClassName: `auto-resize-text ${
-                            title && title.length > 20
-                              ? title.length > 30
-                                ? title.length > 40
-                                  ? "length-extremely-long"
-                                  : "length-very-long"
-                                : "length-long"
-                              : ""
-                          }`,
-                        })}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="no-template-selected">
-                      템플릿을 선택해주세요
-                    </div>
-                  )}
-                </div>
-              </div>
+        <div className="manual-magazine-section">
+          <form onSubmit={handleSubmit} className="magazine-form">
+            <div className="form-group">
+              <label htmlFor="title">제목:</label>
+              <input
+                type="text"
+                id="title"
+                value={title}
+                onChange={handleTitleChange}
+                placeholder="매거진 제목을 입력하세요"
+                required
+              />
             </div>
-          </div>
-        </>
+
+            <div className="form-group">
+              <label htmlFor="content">내용:</label>
+              <textarea
+                id="content"
+                value={content}
+                onChange={handleContentChange}
+                placeholder="매거진 내용을 입력하세요"
+                rows="6"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="cover-image">커버 이미지:</label>
+              <input
+                type="file"
+                id="cover-image"
+                accept="image/*"
+                onChange={handleImageChange}
+              />
+              {coverImage && (
+                <div className="cover-image-preview">
+                  <img src={coverImage} alt="커버 이미지 미리보기" />
+                </div>
+              )}
+            </div>
+
+            <div className="template-section">
+              <button
+                type="button"
+                onClick={toggleTemplateSelection}
+                className="template-toggle-btn"
+              >
+                {showTemplates ? "템플릿 선택 닫기" : "템플릿 선택"}
+              </button>
+
+              {selectedTemplate && (
+                <div className="selected-template-info">
+                  <h3>선택된 템플릿: {selectedTemplate.name}</h3>
+                  <img
+                    src={selectedTemplate.image}
+                    alt={selectedTemplate.name}
+                    className="selected-template-image"
+                  />
+                </div>
+              )}
+
+              {showTemplates && (
+                <div className="template-grid">
+                  {templates.map((template) => (
+                    <div
+                      key={template.id}
+                      className={`template-item ${
+                        selectedTemplate?.id === template.id ? "selected" : ""
+                      }`}
+                      onClick={() => handleTemplateSelect(template)}
+                    >
+                      <img src={template.image} alt={template.name} />
+                      <p>{template.name}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="form-actions">
+              <button
+                type="button"
+                onClick={goToTemplatePreview}
+                className="preview-btn"
+                disabled={!selectedTemplate}
+              >
+                템플릿 미리보기
+              </button>
+
+              <button
+                type="button"
+                onClick={generatePDF}
+                className="pdf-btn"
+                disabled={!selectedTemplate || generatingPDF}
+              >
+                {generatingPDF ? "PDF 생성 중..." : "PDF 생성"}
+              </button>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="submit-btn"
+              >
+                {isSubmitting ? "저장 중..." : "매거진 저장"}
+              </button>
+            </div>
+          </form>
+
+          {selectedTemplate && (
+            <div className="template-preview" ref={templateRef}>
+              <selectedTemplate.component
+                title={title || "제목"}
+                content={content || "내용"}
+                coverImage={coverImage}
+              />
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

@@ -7,6 +7,10 @@
   },
   "routes": [
     {
+      "route": "/.auth/me",
+      "allowedRoles": ["anonymous"]
+    },
+    {
       "route": "/api/auth/login/",
       "allowedRoles": ["anonymous"]
     },
@@ -33,6 +37,16 @@
       "statusCode": 302,
       "redirect": "/.auth/login/aad"
     }
+  },
+  "auth": {
+    "identityProviders": {
+      "azureActiveDirectory": {
+        "registration": {
+          "openIdIssuer": "https://login.microsoftonline.com/common/v2.0",
+          "clientIdSettingName": "AZURE_CLIENT_ID",
+          "clientSecretSettingName": "AZURE_CLIENT_SECRET"
+        }
+      }
+    }
   }
 }
-
