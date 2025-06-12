@@ -14,9 +14,10 @@ export default function Login() {
     try {
       const data = await loginApi(input1, input2);
       if (data.success) {
-        // 로그인 성공 시 localStorage에 정보 저장
-        localStorage.setItem("token", data.userID);
-        localStorage.setItem("userName", data.userID);
+        // 로그인 성공 시 localStorage에 토큰과 사용자 정보 저장
+        localStorage.setItem("token", data.token); // 실제 토큰 저장
+        localStorage.setItem("userID", data.userID);
+        localStorage.setItem("userName", data.userName);
         navigate('/');
       } else {
         // 로그인 실패 (아이디/비밀번호 오류)
