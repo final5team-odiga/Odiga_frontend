@@ -1,17 +1,16 @@
 import axios from "axios";
-
-const BASE_URL = "/api"; // Static Web Apps 프록시 사용
+import BASE_URL from "../config";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
-  // withCredentials 제거 (프록시 사용 시 불필요)
-  timeout: 720000,
+  withCredentials: true, // 필요시
+  timeout: 720000, // 12분 (720,000ms)
 });
 
 // 요청 인터셉터 추가
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("userID");
+    const token = localStorage.getItem('userID');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
