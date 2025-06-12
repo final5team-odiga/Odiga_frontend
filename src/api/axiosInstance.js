@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "/api"; // Static Web Apps 프록시 사용
+const BASE_URL = "https://odigawepapp.azurewebsites.net/api"; // Static Web Apps 프록시 사용
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -22,4 +22,4 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-export default axiosInstance; 
+export default axiosInstance;
