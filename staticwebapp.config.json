@@ -54,5 +54,5 @@
     "allowedIpRanges": [],
     "enablePrivateAccess": false
   },
-  "apiUrl": "https://odigawepapp.azurewebsites.net/api"
+  "apiUrl": "https://odigawepapp.azurewebsites.net"
 }
