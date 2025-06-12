@@ -2,19 +2,19 @@ import axios from "axios";
 
 const BASE_URL = "/api";
 
-// Azure AD 인증이 필요하지 않은 경로들
-const ANONYMOUS_ROUTES = [
+// 자체 로그인 시스템 경로들 (토큰이 필요한 경우)
+const SELF_AUTH_ROUTES = [
   "/auth/login/",
   "/auth/signup/",
   "/auth/check_userid/",
 ];
 
-// 인증 정보 캐싱을 위한 변수들
+// 인증 정보 캐싱을 위한 변수들 (선택적 사용)
 let cachedAuthInfo = null;
 let authInfoExpiry = null;
 let authCheckPromise = null;
 
-// Azure Static Web Apps 인증 정보 가져오기 (캐싱 포함)
+// Azure Static Web Apps 인증 정보 가져오기 (선택적 기능으로 유지)
 const getAuthInfo = async () => {
   if (authCheckPromise) {
     return authCheckPromise;
@@ -55,58 +55,47 @@ const axiosInstance = axios.create({
   timeout: 720000,
 });
 
-// 요청 인터셉터 수정 - 경로별 인증 분리
+// 요청 인터셉터 수정 - 단순화된 인증 처리
 axiosInstance.interceptors.request.use(
   async (config) => {
     console.log("Making request to:", config.url);
 
-    // 익명 허용 경로인지 확인 (자체 로그인 시스템 API들)
-    const isAnonymousRoute = ANONYMOUS_ROUTES.some((route) =>
+    // 자체 로그인 시스템에서 토큰이 필요한 경우에만 헤더 추가
+    const isSelfAuthRoute = SELF_AUTH_ROUTES.some((route) =>
       config.url.includes(route)
     );
 
-    if (isAnonymousRoute) {
-      console.log(
-        "Anonymous route - skipping Azure AD auth check:",
-        config.url
-      );
-      // 자체 로그인 시스템의 경우 localStorage의 토큰 사용
+    if (isSelfAuthRoute) {
+      console.log("Self auth route - adding token if available:", config.url);
       const userToken = localStorage.getItem("userID");
       if (
         userToken &&
         !config.url.includes("/login/") &&
-        !config.url.includes("/signup/")
+        !config.url.includes("/signup/") &&
+        !config.url.includes("/check_userid/")
       ) {
         config.headers["Authorization"] = `Bearer ${userToken}`;
       }
-      return config;
-    }
-
-    // Azure AD 인증이 필요한 경로 (매거진 API 등)
-    console.log("Protected route - checking Azure AD auth:", config.url);
-    const authInfo = await getAuthInfo();
-    console.log("Current auth info:", authInfo);
-
-    if (authInfo && authInfo.clientPrincipal) {
-      console.log(
-        "User is authenticated with Azure AD:",
-        authInfo.clientPrincipal.userId
-      );
-      // Azure Static Web Apps는 쿠키 기반 인증을 사용
     } else {
-      console.log(
-        "User is not authenticated with Azure AD - redirecting to login"
-      );
+      console.log("Anonymous route - no authentication required:", config.url);
+      // 모든 다른 API는 anonymous 접근이므로 인증 체크 불필요
 
-      // 캐시 초기화
-      cachedAuthInfo = null;
-      authInfoExpiry = null;
-
-      if (!window.location.pathname.includes("/.auth/")) {
-        window.location.href = "/.auth/login/aad";
+      // 선택적으로 Azure AD 정보 로깅 (디버깅용)
+      try {
+        const authInfo = await getAuthInfo();
+        if (authInfo && authInfo.clientPrincipal) {
+          console.log(
+            "Azure AD user detected:",
+            authInfo.clientPrincipal.userId
+          );
+          // 필요시 사용자 식별용으로 활용 가능
+        }
+      } catch (error) {
+        // Azure AD 인증 실패해도 API 호출은 계속 진행
+        console.log(
+          "Azure AD auth optional - continuing with anonymous access"
+        );
       }
-
-      return Promise.reject(new Error("Not authenticated with Azure AD"));
     }
 
     return config;
@@ -116,7 +105,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터
+// 응답 인터셉터 수정 - 단순화된 에러 처리
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -125,26 +114,21 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401 || error.response?.status === 302) {
       console.log("인증 오류 감지");
 
-      // 익명 경로에서 인증 오류가 발생하면 자체 로그인 시스템 문제
-      const isAnonymousRoute = ANONYMOUS_ROUTES.some((route) =>
+      // 자체 로그인 시스템 관련 에러만 처리
+      const isSelfAuthRoute = SELF_AUTH_ROUTES.some((route) =>
         error.config?.url?.includes(route)
       );
 
-      if (isAnonymousRoute) {
+      if (isSelfAuthRoute) {
         console.log("자체 로그인 시스템 인증 오류");
-        // 자체 로그인 실패 시 로그인 페이지로
         localStorage.removeItem("userID");
         localStorage.removeItem("userName");
         window.location.href = "/login";
       } else {
-        console.log("Azure AD 인증 오류 - Azure 로그인 페이지로 리디렉션");
-        // Azure AD 인증 실패 시
-        cachedAuthInfo = null;
-        authInfoExpiry = null;
-
-        if (!window.location.pathname.includes("/.auth/")) {
-          window.location.href = "/.auth/login/aad";
-        }
+        // 다른 API들은 anonymous 접근이므로 401/302 에러가 발생하면 로깅만
+        console.log(
+          "Unexpected auth error on anonymous route - API might need debugging"
+        );
       }
     }
 
