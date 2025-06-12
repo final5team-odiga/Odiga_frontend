@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
-import { login as loginApi } from "../api/user";
+import axiosInstance from "../api/axiosInstance";
 
 export default function Login() {
   const [input1, onChangeInput1] = useState('');
@@ -10,23 +10,43 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-      const data = await loginApi(input1, input2);
-      if (data.success) {
-        // 로그인 성공 시 localStorage에 정보 저장
-        localStorage.setItem("userID", data.userID);
-        // userName은 마이페이지 등에서 추가로 받아올 수 있음. 임시로 userID로 저장
-        localStorage.setItem("userName", data.userID);
+      const formData = new FormData();
+      formData.append('userID', input1);
+      formData.append('password', input2);
+
+      const res = await axiosInstance.post('/auth/login/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      if (res.data.success) {
+        if (res.data.userID) {
+          localStorage.setItem('userID', res.data.userID);
+        }
+        if (res.data.userName) {
+          localStorage.setItem('userName', res.data.userName);
+        }
         navigate('/');
       } else {
-        // 로그인 실패 (아이디/비밀번호 오류)
-        alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
+        alert('로그인에 실패했습니다: ' + (res.data.error || '알 수 없는 오류'));
       }
     } catch (error) {
-      // 네트워크 등 기타 오류
-      console.error('로그인 에러:', error);
-      alert('로그인 중 오류가 발생했습니다.');
+      console.error('로그인 중 오류 발생:', error);
+      if (error.response?.status === 400) {
+        alert('아이디 또는 비밀번호가 잘못되었습니다.');
+      } else {
+        alert('로그인 중 오류가 발생했습니다: ' + (error.response?.data?.error || error.message));
+      }
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin(e);
     }
   };
 
@@ -58,6 +78,7 @@ export default function Login() {
                     value={input1}
                     onChange={(event)=>onChangeInput1(event.target.value)}
                     className="id-input"
+                    onKeyPress={handleKeyPress}
                   />
                   <div className="password-container">
                     <input
@@ -66,6 +87,7 @@ export default function Login() {
                       value={input2}
                       onChange={(event)=>onChangeInput2(event.target.value)}
                       className="password-input"
+                      onKeyPress={handleKeyPress}
                     />
                     <button
                       type="button"

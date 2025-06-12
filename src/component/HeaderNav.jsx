@@ -9,6 +9,7 @@ export default function HeaderNav() {
   const userName = localStorage.getItem("userName");
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("userID");
     localStorage.removeItem("userName");
     setIsMenuOpen(false);
@@ -35,7 +36,7 @@ export default function HeaderNav() {
           <span className="header-links">
             {userID ? (
               <>
-                <span>{userName}님 어서오세요</span> | <span style={{cursor:'pointer', color:'#a294f9'}} onClick={handleLogout}>로그아웃</span> | <Link to="/orders">주문조회</Link> | <Link to="/inquiry">문의하기</Link>
+                <span>{userID}님 어서오세요</span> | <span style={{cursor:'pointer', color:'#a294f9'}} onClick={handleLogout}>로그아웃</span> | <Link to="/orders">주문조회</Link> | <Link to="/inquiry">문의하기</Link>
               </>
             ) : (
               <>
