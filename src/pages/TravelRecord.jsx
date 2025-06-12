@@ -17,7 +17,7 @@ const TravelRecord = () => {
   const [showVoiceMode, setShowVoiceMode] = useState(false);
   const [voiceBotText, setVoiceBotText] = useState('오늘 여행은 어떠셨나요?');
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const messagesEndRef = useRef(null);
+  const chatMessagesRef = useRef(null);
   const recognitionRef = useRef(null);
   const [selectedSeason, setSelectedSeason] = useState('');
   const [selectedFolder, setSelectedFolder] = useState('');
@@ -86,7 +86,9 @@ const TravelRecord = () => {
   ];
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
   };
 
   useEffect(() => {
@@ -213,15 +215,16 @@ const TravelRecord = () => {
     return question.friendly;
   };
 
-  // 컴포넌트 마운트 시 첫 질문 추가
+  // 컴포넌트 마운트 시 첫 질문 추가 (중복 방지)
   useEffect(() => {
     if (messages.length === 0) {
-      const firstQuestion = {
-        type: 'bot',
-        content: getCurrentQuestionText(),
-        timestamp: new Date().toLocaleTimeString()
-      };
-      setMessages([firstQuestion]);
+      setMessages([
+        {
+          type: 'bot',
+          content: '왼쪽에서 여행 정보(장소, 계절, 날씨, 기온, 기분 등)를 먼저 선택해 주세요.',
+          timestamp: new Date().toLocaleTimeString()
+        }
+      ]);
     }
   }, []);
 
@@ -240,22 +243,14 @@ const TravelRecord = () => {
     }
   }, [locations, selectedSeason, selectedWeather, selectedTemperature, selectedMood]);
 
-  // 대화 시작 메시지: 정보 선택 안내
+  // 여행 정보가 모두 선택되면 첫 질문 시작 (중복 방지)
   useEffect(() => {
-    if (messages.length === 0) {
-      setMessages([
-        {
-          type: 'bot',
-          content: '왼쪽에서 여행 정보(장소, 계절, 날씨, 기온, 기분 등)를 먼저 선택해 주세요.',
-          timestamp: new Date().toLocaleTimeString()
-        }
-      ]);
-    }
-  }, []);
-
-  // 여행 정보가 모두 선택되면 첫 질문 시작
-  useEffect(() => {
-    if (infoSelected && messages.length === 1 && messages[0].type === 'bot') {
+    if (
+      infoSelected &&
+      messages.length === 1 &&
+      messages[0].type === 'bot' &&
+      messages[0].content.includes('여행 정보')
+    ) {
       setTimeout(() => {
         setMessages([
           messages[0],
@@ -299,12 +294,13 @@ const TravelRecord = () => {
 
     // 다음 질문이 있으면 추가
     if (currentQuestionIndex < questions.length - 1) {
+      const nextQuestionIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextQuestionIndex);
+      
       setTimeout(() => {
-        const nextQuestionIndex = currentQuestionIndex + 1;
-        setCurrentQuestionIndex(nextQuestionIndex);
         const nextQuestion = {
           type: 'bot',
-          content: getCurrentQuestionText(),
+          content: questions[nextQuestionIndex].friendly,
           timestamp: new Date().toLocaleTimeString()
         };
         setMessages(prev => [...prev, nextQuestion]);
@@ -583,7 +579,7 @@ const TravelRecord = () => {
         </div>
 
         <div className="chat-section">
-          <div className="chat-messages" style={{overflowY: 'auto', maxHeight: '600px'}}>
+          <div className="chat-messages" ref={chatMessagesRef} style={{overflowY: 'auto', maxHeight: '600px'}}>
             {messages.map((message, index) => (
               <div
                 key={index}
@@ -596,7 +592,6 @@ const TravelRecord = () => {
                 <div className="message-timestamp">{message.timestamp}</div>
               </div>
             ))}
-            <div ref={messagesEndRef} />
           </div>
 
           <form onSubmit={handleSendMessage} className="chat-input-form">
@@ -637,7 +632,6 @@ const TravelRecord = () => {
                   {msg.type === 'user' && <div className="user-avatar">나</div>}
                 </div>
               ))}
-              <div ref={messagesEndRef} />
             </div>
             <form className="chatbot-input-bar" onSubmit={handleSendMessage}>
               <input

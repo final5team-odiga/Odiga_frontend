@@ -332,51 +332,6 @@
   object-fit: fill;
 }
 
-/* 모바일 대응 */
-@media (max-width: 900px) {
-  .magazine-title {
-    top: 50px;
-  }
-  .text-bg-img {
-    width: 300px;
-    height: 50px;
-  }
-  .magazine-title-text {
-    font-size: 36px;
-  }
-  .login-form {
-    width: 90vw;
-    padding: 24px 0 32px 0;
-  }
-  .id-input,
-  .password-input {
-    font-size: 16px;
-    padding: 14px 30px 14px 14px;
-    width: 90%;
-  }
-  .password-container {
-    width: 90%;
-  }
-  .keep-login,
-  .login-button {
-    width: 90%;
-  }
-  .magazine-bg-img_1 {
-    width: 300px;
-    height: 240px;
-    right: 200px;
-    bottom: 180px;
-  }
-  .magazine-bg-img_2 {
-    width: 200px;
-    height: 186px;
-    right: -160px;
-    bottom: -32px;
-  }
-  .language-button {
-    right: 150px;
-  }
-}
 
 @media (max-width: 600px) {
   .login-page-bg {

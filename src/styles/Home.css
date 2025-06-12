@@ -133,7 +133,7 @@ body, #root {
   width: 100%;
   min-height: 120px;
   background: none;
-  margin-right: 160px;
+  margin-right: 280px;
 }
 .weather-row, .temperature-row, .emotion-row {
   display: flex;
@@ -184,8 +184,8 @@ body, #root {
 }
 .home-chatbot-bubble {
   position: absolute;
-  left: -25px;
-  bottom: -45px;
+  left: -190px;
+  bottom: -35px;
   width: 330px;
   height: 180px;
   transform: none;
@@ -215,19 +215,19 @@ body, #root {
 }
 .home-chatbot-shadow {
   position: absolute;
-  left: 204px;
+  left: 49px;
   bottom: -205px;
-  width: 200px;
+  width: 280px;
   height: 30px;
   opacity: 0.5;
   z-index: 1;
 }
 .home-chatbot-character {
   position: absolute;
-  left: 155px;
+  left: 0px;
   bottom: -230px;
-  width: 300px;
-  height: 300px;
+  width: 380px;
+  height: 380px;
   z-index: 2;
 }
 

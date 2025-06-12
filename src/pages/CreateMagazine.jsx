@@ -280,7 +280,7 @@ export default function CreateMagazine() {
     alert('이미지 업로드 기능 구현 필요');
   };
 
-  // AI 매거진 생성 버튼 핸들러 (더미)
+  // AI 매거진 생성 버튼 핸들러 (비동기)
   const handleAIGenerate = async () => {
     if (!selectedFolder) {
       alert('매거진 폴더를 선택해주세요.');
@@ -291,20 +291,69 @@ export default function CreateMagazine() {
     try {
       const formData = new FormData();
       formData.append('magazine_id', selectedFolder);
-      const res = await axiosInstance.post('/magazine/generate/', formData, {
+      formData.append('image_folder', `${selectedFolder}/images`);
+      formData.append('user_input', `${selectedFolder}/texts`);
+      const res = await axiosInstance.post('/magazine/generate-async/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+      
       if (res.data.success) {
-        const pdfUrl = res.data.pdf_generation?.output_path;
-        setAiOutput(pdfUrl || null);
+        // 상태 확인 시작
+        checkMagazineStatus(selectedFolder);
       } else {
-        alert('매거진 생성 실패: ' + (res.data.message || ''));
+        alert('매거진 생성 시작 실패: ' + (res.data.message || ''));
+        setAIGenerating(false);
       }
     } catch (e) {
       alert('매거진 생성 중 오류가 발생했습니다.');
-    } finally {
       setAIGenerating(false);
     }
+  };
+
+  // 매거진 생성 상태 확인 함수
+  const checkMagazineStatus = async (magazineId) => {
+    let attempts = 0;
+    const maxAttempts = 60; // 5분 (5초 * 60회)
+    
+    const checkStatus = async () => {
+      try {
+        const res = await axiosInstance.get(`/magazine/status/${magazineId}`);
+        const data = res.data;
+        
+        if (data.success) {
+          if (data.status === 'completed') {
+            // 생성 완료
+            setAIGenerating(false);
+            setShowAIPopup(true);
+            fetchOutputFiles(magazineId);
+            return true;
+          } else if (data.status === 'failed') {
+            // 생성 실패
+            alert('매거진 생성 실패: ' + (data.error || '알 수 없는 오류'));
+            setAIGenerating(false);
+            return true;
+          }
+        }
+        return false;
+      } catch (e) {
+        console.error('상태 확인 중 오류:', e);
+        return false;
+      }
+    };
+
+    const pollStatus = async () => {
+      attempts++;
+      const isComplete = await checkStatus();
+      
+      if (!isComplete && attempts < maxAttempts) {
+        setTimeout(pollStatus, 5000); // 5초마다 확인
+      } else if (attempts >= maxAttempts) {
+        alert('매거진 생성 시간이 초과되었습니다. 나중에 다시 확인해주세요.');
+        setAIGenerating(false);
+      }
+    };
+
+    pollStatus();
   };
 
   // 커뮤니티 등록 더미 함수
