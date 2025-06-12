@@ -17,11 +17,7 @@ export default function Login() {
       formData.append("userID", input1);
       formData.append("password", input2);
 
-      const res = await axiosInstance.post("/auth/login/", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await axiosInstance.post("/auth/login/", formData, {});
 
       if (res.data.success) {
         if (res.data.userID) {

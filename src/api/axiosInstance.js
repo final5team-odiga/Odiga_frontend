@@ -6,9 +6,6 @@ const axiosInstance = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
   timeout: 720000,
-  headers: {
-    "Content-Type": "application/json", // 기본 헤더로 설정
-  },
 });
 
 // 요청 인터셉터는 동일하게 유지
