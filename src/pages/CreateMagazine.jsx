@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateMagazine.css";
 import { FaFolderOpen, FaImage, FaFileAlt, FaPlus } from "react-icons/fa";
-// 템플릿 컴포넌트 import
+// 템플릿 컴포넌트 import (기존과 동일)
 import { Section01 } from "../templates/Section01";
 import { Section02 } from "../templates/Section02";
 import { Section03 } from "../templates/Section03";
@@ -43,11 +43,7 @@ export default function CreateMagazine() {
   const [showAIPopup, setShowAIPopup] = useState(false);
   const [outputFiles, setOutputFiles] = useState([]);
 
-  // 인증 관련 state 추가
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authChecking, setAuthChecking] = useState(true);
-
-  // 템플릿 목록 정의
+  // 템플릿 목록 정의 (기존과 동일)
   const templates = [
     {
       id: 1,
@@ -141,57 +137,20 @@ export default function CreateMagazine() {
     },
   ];
 
-  // 인증 상태 확인 함수
-  const checkAuthStatus = async () => {
-    try {
-      console.log("인증 상태 확인 시작");
-      const response = await fetch("/.auth/me");
-      const authInfo = await response.json();
-
-      console.log("인증 정보:", authInfo);
-
-      if (authInfo && authInfo.length > 0 && authInfo[0].userId) {
-        setIsAuthenticated(true);
-        localStorage.setItem("userID", authInfo[0].userId);
-        localStorage.setItem(
-          "userName",
-          authInfo[0].userDetails ||
-            authInfo[0].userClaims?.find((c) => c.typ === "name")?.val ||
-            ""
-        );
-        console.log("인증 성공:", authInfo[0].userId);
-      } else {
-        console.log("인증되지 않은 사용자 - 로그인으로 리디렉션");
-        setIsAuthenticated(false);
-        window.location.href = "/.auth/login/aad";
-      }
-    } catch (error) {
-      console.error("인증 상태 확인 실패:", error);
-      setIsAuthenticated(false);
-      window.location.href = "/.auth/login/aad";
-    } finally {
-      setAuthChecking(false);
-    }
-  };
-
-  // 컴포넌트 마운트 시 인증 확인
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
   useEffect(() => {
     if (selectedTemplate) {
       setShowTemplates(false);
     }
   }, [selectedTemplate]);
 
-  // 폴더 목록 불러오기 (개선된 버전)
-  const fetchFolderList = async () => {
-    if (!isAuthenticated) {
-      console.log("인증되지 않은 사용자 - 폴더 목록 조회 중단");
-      return;
+  // 폴더 목록 불러오기 (개선된 에러 처리)
+  useEffect(() => {
+    if (mode === "ai") {
+      fetchFolderList();
     }
+  }, [mode]);
 
+  const fetchFolderList = async () => {
     try {
       console.log("매거진 리스트 요청 시작");
       const res = await axiosInstance.get("/storage/magazines/list/");
@@ -207,18 +166,19 @@ export default function CreateMagazine() {
       }
     } catch (error) {
       console.error("매거진 리스트 API 오류:", error);
+      console.error("응답 상태:", error.response?.status);
+      console.error("응답 데이터:", error.response?.data);
 
       if (error.response?.status === 401) {
-        console.log("인증 토큰 만료 - 재로그인 필요");
-        localStorage.removeItem("userID");
-        localStorage.removeItem("userName");
-        setIsAuthenticated(false);
-        window.location.href = "/.auth/login/aad";
+        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+        // 직접 로그인 페이지로 이동하지 않고 사용자가 선택하도록
+        const goToLogin = confirm("로그인 페이지로 이동하시겠습니까?");
+        if (goToLogin) {
+          window.location.href = "/.auth/login/aad";
+        }
       } else if (error.response?.status === 403) {
         alert("접근 권한이 없습니다.");
       } else {
-        console.error("응답 상태:", error.response?.status);
-        console.error("응답 데이터:", error.response?.data);
         alert(
           `매거진 리스트를 불러오는데 실패했습니다: ${
             error.response?.status || error.message
@@ -229,23 +189,16 @@ export default function CreateMagazine() {
     }
   };
 
-  // mode가 'ai'이고 인증된 상태일 때만 폴더 목록 불러오기
+  // 폴더 선택 시 이미지/텍스트 불러오기 (기존과 동일하지만 에러 처리 개선)
   useEffect(() => {
-    if (mode === "ai" && isAuthenticated && !authChecking) {
-      fetchFolderList();
-    }
-  }, [mode, isAuthenticated, authChecking]);
-
-  // 폴더 선택 시 이미지/텍스트 불러오기
-  useEffect(() => {
-    if (selectedFolder && isAuthenticated) {
+    if (selectedFolder) {
       fetchImageList(selectedFolder);
       fetchTextList(selectedFolder);
     } else {
       setAiImages([]);
       setAiTexts([]);
     }
-  }, [selectedFolder, isAuthenticated]);
+  }, [selectedFolder]);
 
   const fetchImageList = async (magazineId) => {
     try {
@@ -263,7 +216,7 @@ export default function CreateMagazine() {
     } catch (error) {
       console.error("이미지 리스트 오류:", error);
       if (error.response?.status === 401) {
-        window.location.href = "/.auth/login/aad";
+        alert("인증이 만료되었습니다.");
       }
       setAiImages([]);
     }
@@ -285,7 +238,7 @@ export default function CreateMagazine() {
     } catch (error) {
       console.error("텍스트 리스트 오류:", error);
       if (error.response?.status === 401) {
-        window.location.href = "/.auth/login/aad";
+        alert("인증이 만료되었습니다.");
       }
       setAiTexts([]);
     }
@@ -306,7 +259,7 @@ export default function CreateMagazine() {
     } catch (error) {
       console.error("아웃풋 파일 리스트 오류:", error);
       if (error.response?.status === 401) {
-        window.location.href = "/.auth/login/aad";
+        alert("인증이 만료되었습니다.");
       }
       setOutputFiles([]);
     }
@@ -333,46 +286,12 @@ export default function CreateMagazine() {
     } catch (error) {
       console.error("다운로드 오류:", error);
       if (error.response?.status === 401) {
-        window.location.href = "/.auth/login/aad";
+        alert("인증이 만료되었습니다.");
       } else {
         alert("다운로드 중 오류가 발생했습니다.");
       }
     }
   };
-
-  // 인증 확인 중일 때 로딩 표시
-  if (authChecking) {
-    return (
-      <div className="login-page-bg">
-        <div className="login-container">
-          <div className="login-wrapper">
-            <div className="login-content">
-              <div style={{ textAlign: "center", color: "white" }}>
-                <p>인증 상태 확인 중...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 인증되지 않은 경우
-  if (!isAuthenticated) {
-    return (
-      <div className="login-page-bg">
-        <div className="login-container">
-          <div className="login-wrapper">
-            <div className="login-content">
-              <div style={{ textAlign: "center", color: "white" }}>
-                <p>로그인이 필요합니다. 잠시 후 로그인 페이지로 이동합니다.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // 기존 핸들러 함수들 (변경 없음)
   const handleTitleChange = (e) => {
@@ -502,7 +421,7 @@ export default function CreateMagazine() {
     } catch (error) {
       console.error("AI 생성 오류:", error);
       if (error.response?.status === 401) {
-        window.location.href = "/.auth/login/aad";
+        alert("인증이 만료되었습니다.");
       } else {
         alert("매거진 생성 중 오류가 발생했습니다.");
       }
@@ -533,7 +452,7 @@ export default function CreateMagazine() {
       } catch (error) {
         console.error("상태 확인 중 오류:", error);
         if (error.response?.status === 401) {
-          window.location.href = "/.auth/login/aad";
+          alert("인증이 만료되었습니다.");
         }
         return false;
       }
@@ -555,7 +474,7 @@ export default function CreateMagazine() {
     alert("커뮤니티 등록 기능은 추후 구현 예정입니다!");
   };
 
-  // 기존 JSX 반환 부분은 그대로 유지
+  // 기존 JSX 반환 부분 (완전히 동일)
   return (
     <div className="create-magazine-container">
       <div className="magazine-title">
