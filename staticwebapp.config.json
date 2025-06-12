@@ -3,50 +3,44 @@
     "apiRuntime": "node:20"
   },
   "navigationFallback": {
-    "rewrite": "/index.html"
+    "rewrite": "/index.html",
+    "exclude": ["/images/*", "/css/*", "/js/*", "/api/*", "/.auth/*"]
   },
   "routes": [
     {
-      "route": "/.auth/me",
+      "route": "/api/auth/login*",
       "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/auth/login/",
+      "route": "/api/auth/signup*",
       "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/auth/signup/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
-      "route": "/api/auth/check_userid/",
+      "route": "/api/auth/check_userid*",
       "allowedRoles": ["anonymous"]
     },
     {
       "route": "/api/*",
       "allowedRoles": ["authenticated"]
-    },
-    {
-      "route": "/*",
-      "serve": "/index.html",
-      "statusCode": 200
     }
   ],
+  "globalHeaders": {
+    "Access-Control-Allow-Credentials": "true",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization"
+  },
   "responseOverrides": {
     "401": {
-      "statusCode": 302,
-      "redirect": "/.auth/login/aad"
-    }
-  },
-  "auth": {
-    "identityProviders": {
-      "azureActiveDirectory": {
-        "registration": {
-          "openIdIssuer": "https://login.microsoftonline.com/common/v2.0",
-          "clientIdSettingName": "AZURE_CLIENT_ID",
-          "clientSecretSettingName": "AZURE_CLIENT_SECRET"
-        }
-      }
+      "redirect": "/.auth/login/aad",
+      "statusCode": 302
+    },
+    "403": {
+      "redirect": "/.auth/login/aad",
+      "statusCode": 302
+    },
+    "404": {
+      "rewrite": "/index.html"
     }
   }
 }
