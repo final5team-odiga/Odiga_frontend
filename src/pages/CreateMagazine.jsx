@@ -166,16 +166,11 @@ export default function CreateMagazine() {
       }
     } catch (error) {
       console.error("매거진 리스트 API 오류:", error);
-      console.error("응답 상태:", error.response?.status);
-      console.error("응답 데이터:", error.response?.data);
 
       if (error.response?.status === 401) {
-        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
-        // 직접 로그인 페이지로 이동하지 않고 사용자가 선택하도록
-        const goToLogin = confirm("로그인 페이지로 이동하시겠습니까?");
-        if (goToLogin) {
-          window.location.href = "/.auth/login/aad";
-        }
+        alert("로그인이 필요합니다.");
+        // confirm 없이 직접 리디렉션
+        window.location.href = "/.auth/login/aad";
       } else if (error.response?.status === 403) {
         alert("접근 권한이 없습니다.");
       } else {
