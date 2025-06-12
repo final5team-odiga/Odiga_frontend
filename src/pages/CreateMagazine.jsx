@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/CreateMagazine.css";
 import { FaFolderOpen, FaImage, FaFileAlt, FaPlus } from "react-icons/fa";
+
 // 템플릿 컴포넌트 import
 import { Section01 } from "../templates/Section01";
 import { Section02 } from "../templates/Section02";
