@@ -24,6 +24,12 @@ export default function Login() {
       });
       
       if (res.data.success) {
+        if (res.data.userID) {
+          localStorage.setItem('userID', res.data.userID);
+        }
+        if (res.data.userName) {
+          localStorage.setItem('userName', res.data.userName);
+        }
         navigate('/');
       } else {
         alert('로그인에 실패했습니다: ' + (res.data.error || '알 수 없는 오류'));
