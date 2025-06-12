@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
-import { login as loginApi } from "../api/user";
+import axiosInstance from "../api/axiosInstance";
 
 export default function Login() {
   const [input1, onChangeInput1] = useState('');
@@ -10,29 +10,38 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
     try {
-      const data = await loginApi(input1, input2);
-      console.log('로그인 응답:', data);
-      if (data.success) {
-        // 로그인 성공 시 localStorage에 정보 저장
-        localStorage.setItem("userID", data.userID);
-        localStorage.setItem("userName", data.userName || data.userID);
+      const res = await axiosInstance.post('/auth/login/', {
+        username: input1,
+        password: input2
+      });
+      
+      if (res.data.success) {
+        // 토큰 저장
+        if (res.data.token) {
+          localStorage.setItem('token', res.data.token);
+        }
+        
+        // 사용자 정보 저장
+        if (res.data.user) {
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+        }
+        
         navigate('/');
       } else {
-        // 로그인 실패 (아이디/비밀번호 오류)
-        alert('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.');
+        alert('로그인에 실패했습니다: ' + (res.data.message || '알 수 없는 오류'));
       }
     } catch (error) {
-      // 네트워크 등 기타 오류
-      console.error('로그인 에러:', error);
-      alert('로그인 중 오류가 발생했습니다.');
+      console.error('로그인 중 오류 발생:', error);
+      alert('로그인 중 오류가 발생했습니다: ' + (error.response?.data?.message || error.message));
     }
   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleLogin();
+      handleLogin(e);
     }
   };
 
