@@ -44,12 +44,6 @@
       "statusCode": 200
     }
   ],
-  "forwardingGateway": {
-    "allowedForwardedHosts": ["odigawepapp.azurewebsites.net"],
-    "requiredHeaders": {
-      "X-Forwarded-Host": "brave-grass-0233c7200.6.azurestaticapps.net"
-    }
-  },
   "responseOverrides": {
     "401": {
       "statusCode": 302,
